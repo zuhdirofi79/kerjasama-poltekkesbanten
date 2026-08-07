@@ -1,0 +1,107 @@
+<?php
+
+use App\Http\Controllers\Admin\AccessRequestController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
+use App\Http\Controllers\Admin\InstitutionFolderController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\YearFolderController;
+use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\CooperationController;
+use App\Http\Controllers\DocumentFileController;
+use App\Http\Controllers\DocumentRequestController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/profil', [PageController::class, 'profil'])->name('pages.profil');
+Route::get('/mitra', [PageController::class, 'mitra'])->name('pages.mitra');
+Route::get('/skema-kerjasama', [PageController::class, 'skema'])->name('pages.skema');
+Route::get('/kontak', [PageController::class, 'kontak'])->name('pages.kontak');
+Route::get('/ajukan-kerjasama', [PageController::class, 'ajukan'])->name('pages.ajukan');
+
+Route::prefix('kerjasama')->name('cooperation.')->group(function () {
+    Route::get('{section:slug}', [CooperationController::class, 'section'])->name('section');
+    Route::get('{section:slug}/{category:slug}', [CooperationController::class, 'category'])->name('category');
+    Route::get('{section:slug}/{category:slug}/{year}', [CooperationController::class, 'year'])->name('year');
+    Route::get('{section:slug}/{category:slug}/{year}/{institution:slug}', [CooperationController::class, 'institution'])
+        ->name('institution');
+});
+
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/documents/{document}/request', [DocumentRequestController::class, 'show'])
+        ->name('documents.request');
+    Route::post('/documents/{document}/request-access', [DocumentRequestController::class, 'store'])
+        ->middleware('throttle:10,1')
+        ->name('documents.request-access');
+    Route::get('/documents/{document}/view', [DocumentFileController::class, 'view'])
+        ->name('documents.view');
+    Route::get('/documents/{document}/download', [DocumentFileController::class, 'download'])
+        ->name('documents.download');
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::get('/dashboard', function () {
+    $user = auth()->user();
+
+    if ($user?->canAccessAdminPanel()) {
+        return redirect()->route('admin.dashboard');
+    }
+
+    return redirect()->route('home');
+})->middleware(['auth', 'active'])->name('dashboard');
+
+Route::prefix('admin')
+    ->middleware(['auth', 'active', 'staff'])
+    ->name('admin.')
+    ->group(function () {
+        Route::get('/', DashboardController::class)->name('dashboard');
+
+        Route::get('years', [YearFolderController::class, 'index'])->name('years.index');
+        Route::get('years/create', [YearFolderController::class, 'create'])->name('years.create');
+        Route::post('years', [YearFolderController::class, 'store'])->name('years.store');
+        Route::get('years/{yearFolder}/edit', [YearFolderController::class, 'edit'])->name('years.edit');
+        Route::put('years/{yearFolder}', [YearFolderController::class, 'update'])->name('years.update');
+        Route::delete('years/{yearFolder}', [YearFolderController::class, 'destroy'])->name('years.destroy');
+
+        Route::get('institutions', [InstitutionFolderController::class, 'index'])->name('institutions.index');
+        Route::get('institutions/create', [InstitutionFolderController::class, 'create'])->name('institutions.create');
+        Route::post('institutions', [InstitutionFolderController::class, 'store'])->name('institutions.store');
+        Route::get('institutions/{institution}/edit', [InstitutionFolderController::class, 'edit'])->name('institutions.edit');
+        Route::put('institutions/{institution}', [InstitutionFolderController::class, 'update'])->name('institutions.update');
+        Route::delete('institutions/{institution}', [InstitutionFolderController::class, 'destroy'])->name('institutions.destroy');
+
+        Route::get('documents', [AdminDocumentController::class, 'index'])->name('documents.index');
+        Route::get('documents/create', [AdminDocumentController::class, 'create'])->name('documents.create');
+        Route::post('documents', [AdminDocumentController::class, 'store'])->name('documents.store');
+        Route::get('documents/{document}/edit', [AdminDocumentController::class, 'edit'])->name('documents.edit');
+        Route::put('documents/{document}', [AdminDocumentController::class, 'update'])->name('documents.update');
+        Route::delete('documents/{document}', [AdminDocumentController::class, 'destroy'])->name('documents.destroy');
+
+        Route::get('access-requests', [AccessRequestController::class, 'index'])->name('access-requests.index');
+        Route::get('access-requests/{accessRequest}', [AccessRequestController::class, 'show'])->name('access-requests.show');
+        Route::post('access-requests/{accessRequest}/approve', [AccessRequestController::class, 'approve'])->name('access-requests.approve');
+        Route::post('access-requests/{accessRequest}/reject', [AccessRequestController::class, 'reject'])->name('access-requests.reject');
+        Route::post('access-requests/{accessRequest}/revoke', [AccessRequestController::class, 'revoke'])->name('access-requests.revoke');
+
+        Route::get('users', [UserController::class, 'index'])->name('users.index');
+        Route::get('users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('users', [UserController::class, 'store'])->name('users.store');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+    });
+
+require __DIR__.'/auth.php';
