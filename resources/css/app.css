@@ -54,12 +54,26 @@
         @apply flex items-center gap-3 min-w-0 shrink-0;
     }
 
-    .site-header__brand img {
-        @apply h-10 w-auto sm:h-11;
+    .brand-logo-poltekkes {
+        width: auto;
+        height: 44px;
+        object-fit: contain;
+        display: block;
     }
 
-    .site-header__blu {
-        @apply h-10 w-10 sm:h-11 sm:w-11 shrink-0;
+    .brand-logo-blu {
+        width: auto;
+        height: 44px;
+        object-fit: contain;
+        display: block;
+        flex-shrink: 0;
+    }
+
+    @media (min-width: 640px) {
+        .brand-logo-poltekkes,
+        .brand-logo-blu {
+            height: 52px;
+        }
     }
 
     .nav-link {
@@ -499,8 +513,12 @@
         @apply flex items-center gap-3;
     }
 
-    .site-footer__brand img {
-        @apply h-11 w-auto;
+    .site-footer__logo-wrap {
+        @apply flex items-center rounded-xl bg-white px-3 py-2 shadow-sm;
+    }
+
+    .site-footer__logo-wrap .brand-logo-poltekkes {
+        height: 44px;
     }
 
     .site-footer__name {

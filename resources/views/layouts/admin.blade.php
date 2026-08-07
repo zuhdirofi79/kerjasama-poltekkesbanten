@@ -14,10 +14,25 @@
 <div class="flex min-h-screen">
     <aside class="hidden w-64 shrink-0 bg-teal-900 text-white md:flex md:flex-col">
         <div class="border-b border-teal-800 px-5 py-5">
-            <a href="{{ route('admin.dashboard') }}" class="block">
-                <span class="text-xs font-semibold uppercase tracking-wider text-teal-300">Admin Panel</span>
-                <span class="mt-1 block text-sm font-bold">Poltekkes Banten</span>
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+                <div class="rounded-lg bg-white px-2 py-1.5">
+                    <img
+                        src="{{ asset('images/branding/logo-poltekkes.png') }}"
+                        alt="Kemenkes Poltekkes Banten"
+                        class="h-9 w-auto object-contain"
+                        width="140"
+                        height="36"
+                    >
+                </div>
+                <img
+                    src="{{ asset('images/branding/logo-blu.svg') }}"
+                    alt="Badan Layanan Umum"
+                    class="h-10 w-10 object-contain"
+                    width="40"
+                    height="40"
+                >
             </a>
+            <span class="mt-3 block text-xs font-semibold uppercase tracking-wider text-teal-300">Admin Panel</span>
         </div>
         <nav class="flex-1 space-y-1 px-3 py-4">
             <a href="{{ route('admin.dashboard') }}" class="admin-nav-link {{ request()->routeIs('admin.dashboard') ? 'admin-nav-link-active' : '' }}">Dashboard</a>

@@ -1,7 +1,15 @@
 <footer class="site-footer">
     <div class="site-footer__inner">
         <div class="site-footer__brand">
-            <img src="{{ asset('images/branding/logo-poltekkes-white.svg') }}" alt="Poltekkes Kemenkes Banten" width="200" height="40">
+            <div class="site-footer__logo-wrap">
+                <img
+                    src="{{ asset('images/branding/logo-poltekkes.png') }}"
+                    alt="Kemenkes Poltekkes Banten"
+                    class="brand-logo-poltekkes"
+                    width="180"
+                    height="52"
+                >
+            </div>
             <div>
                 <p class="site-footer__name">Poltekkes Kemenkes Banten</p>
                 <p class="site-footer__url">kerjasama.poltekkesbanten.ac.id</p>

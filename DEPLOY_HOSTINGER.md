@@ -189,6 +189,13 @@ cp -a public/build ../public_html/build
 rm -rf ../public_html/images
 cp -a public/images ../public_html/images
 
+# Canonical branding (must exist in public_html for browser):
+#   public_html/images/branding/logo-poltekkes.png
+#   public_html/images/branding/logo-blu.svg
+mkdir -p ../public_html/images/branding
+cp -f public/images/branding/logo-poltekkes.png ../public_html/images/branding/logo-poltekkes.png
+cp -f public/images/branding/logo-blu.svg ../public_html/images/branding/logo-blu.svg
+
 # 5) Clear / rebuild caches (views + config)
 php artisan optimize:clear
 php artisan optimize

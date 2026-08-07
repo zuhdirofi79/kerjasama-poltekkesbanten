@@ -6,7 +6,7 @@
 @section('content')
 <x-public.hero
     mode="home"
-    title="Kerjasama Rumah Sakit"
+    title="Kerjasama Poltekkes Kemenkes Banten"
     subtitle="Membangun kemitraan strategis antara Poltekkes Kemenkes Banten dan institusi layanan kesehatan untuk pendidikan, penelitian, dan pengabdian masyarakat."
 />
 

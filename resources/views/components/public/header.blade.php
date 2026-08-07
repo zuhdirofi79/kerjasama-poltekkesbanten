@@ -9,8 +9,20 @@
 <header class="site-header">
     <div class="site-header__inner">
         <a href="{{ route('home') }}" class="site-header__brand">
-            <img src="{{ asset('images/branding/logo-poltekkes.svg') }}" alt="Kemenkes Poltekkes Banten" width="200" height="40">
-            <img src="{{ asset('images/branding/logo-blu.svg') }}" alt="BLU" class="site-header__blu" width="44" height="44">
+            <img
+                src="{{ asset('images/branding/logo-poltekkes.png') }}"
+                alt="Kemenkes Poltekkes Banten"
+                class="brand-logo-poltekkes"
+                width="180"
+                height="52"
+            >
+            <img
+                src="{{ asset('images/branding/logo-blu.svg') }}"
+                alt="Badan Layanan Umum"
+                class="brand-logo-blu"
+                width="52"
+                height="52"
+            >
         </a>
 
         <nav class="hidden items-center gap-1 lg:flex" aria-label="Utama">
