@@ -4,7 +4,13 @@ import laravel from 'laravel-vite-plugin';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            // partnership.css is a dedicated entry so form UI cannot be dropped
+            // by PostCSS @import ordering rules (imports must be first).
+            input: [
+                'resources/css/app.css',
+                'resources/css/partnership.css',
+                'resources/js/app.js',
+            ],
             refresh: true,
         }),
     ],

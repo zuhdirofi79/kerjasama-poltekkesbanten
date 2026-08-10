@@ -288,17 +288,48 @@ Native Laravel form (not Tally). Attachments live on the same private disk under
 
 `storage/app/private/kerjasama/partnership-applications/{year}/{uuid}/...`
 
-Deploy steps after uploading source (never `migrate:fresh`):
+### CSS pipeline (critical)
+
+Public form styles live in a **dedicated Vite entry**:
+
+```
+resources/css/partnership.css
+        ↓ (vite.config.js input)
+public/build/assets/partnership-XXXX.css
+        ↓ (@vite in layouts/public.blade.php)
+browser
+```
+
+Site chrome (header/footer) stays in `resources/css/app.css`.
+
+**Do not** only upload Blade and skip `public/build`. Production previously showed new Blade classes (`partnership-card`, Fax honeypot) while serving an old `app-*.css` from 2026-08-07 that contained **zero** partnership selectors — header styled, form looked like browser-default HTML.
+
+### Deploy steps (never `migrate:fresh`)
 
 ```bash
 cd ~/domains/kerjasama.poltekkesbanten.ac.id/laravel-kerjasama
 
 php artisan migrate --force
+php artisan optimize:clear
 
-# Build assets locally or on a machine with Node, then sync build:
-# npm ci && npm run build
-mv ../public_html/build ../public_html/build-backup-$(date +%Y%m%d-%H%M)
+# Prefer building on a machine with Node, then upload public/build,
+# OR build on the server if Node is available:
+npm ci
+npm run build
+
+# Prove compiled CSS contains partnership rules BEFORE copying:
+grep -Rao 'partnership-ui-build-marker' public/build/assets | head
+grep -Rao 'partnership-card' public/build/assets | head
+grep -Rao 'partnership-honeypot' public/build/assets | head
+grep -Rao 'choice-card' public/build/assets | head
+cat public/build/manifest.json
+
+# Sync BOTH app-*.css AND partnership-*.css via full build folder:
+mv ../public_html/build ../public_html/build-backup-$(date +%Y%m%d-%H%M%S)
 cp -a public/build ../public_html/build
+
+# Manifest hashes MUST match:
+sha256sum public/build/manifest.json ../public_html/build/manifest.json
 
 php artisan optimize:clear
 php artisan optimize
@@ -312,13 +343,25 @@ APP_DEBUG=false
 PARTNERSHIP_APPLICATION_MAX_UPLOAD_MB=10
 ```
 
-Ensure SMTP is configured so Superadmin1/2 and applicants receive mail (mail failure does not block DB save).
-
-Post-deploy checks:
+### Post-deploy verify (prove CSS path before cache purge)
 
 ```bash
-curl -I https://kerjasama.poltekkesbanten.ac.id/ajukan-kerjasama
-# Expect HTTP 200 (not 500 / PageController missing)
+# HTML must reference BOTH CSS assets
+curl -sS 'https://kerjasama.poltekkesbanten.ac.id/ajukan-kerjasama?assetcheck=1' \
+  | grep -Eo 'href="[^"]+\.css[^"]*"'
+
+# Partnership stylesheet must contain markers
+grep -Rao 'partnership-ui-build-marker' ../public_html/build/assets | head
+grep -Rao 'partnership-card' ../public_html/build/assets | head
+
+# HTTP 200 + text/css (replace filename from manifest)
+curl -I 'https://kerjasama.poltekkesbanten.ac.id/build/assets/partnership-XXXX.css'
 ```
 
-Then purge Hostinger cache/CDN, submit one test application, verify Admin → Pengajuan Kerjasama, and confirm attachment download requires staff auth.
+**Only after** the greps succeed and CSS returns HTTP 200:
+
+1. Hostinger hPanel → Cache → Hapus cache  
+2. Performa / CDN → Flush cache  
+3. Verify in Incognito: Fax invisible, card/stepper/inputs styled
+
+Note: Hostinger previously served CSS with `Cache-Control: public, max-age=604800` (7 days). Stale CDN will keep the old unstyled form until purge.

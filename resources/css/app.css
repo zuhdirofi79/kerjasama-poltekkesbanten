@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -33,14 +33,14 @@
 }
 
 @layer components {
-    /* —— Layout shell —— */
+    /* â€”â€” Layout shell â€”â€” */
     .page-shell {
         @apply min-h-screen flex flex-col;
         background-color: var(--brand-surface);
         color: var(--brand-text);
     }
 
-    /* —— Header —— */
+    /* â€”â€” Header â€”â€” */
     .site-header {
         @apply sticky top-0 z-50 border-b bg-white/95 backdrop-blur;
         border-color: var(--brand-border);
@@ -95,7 +95,7 @@
         background-color: var(--brand-teal);
     }
 
-    /* —— Buttons —— */
+    /* â€”â€” Buttons â€”â€” */
     .btn-cta,
     .btn-solid {
         @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition;
@@ -142,7 +142,7 @@
         filter: brightness(0) invert(1);
     }
 
-    /* Compact section hero keeps teal outline button (PDF pages 2–3) */
+    /* Compact section hero keeps teal outline button (PDF pages 2â€“3) */
     .hero--compact .btn-outline--on-dark {
         @apply bg-white/90;
         border-color: var(--brand-teal);
@@ -177,7 +177,7 @@
         background-color: var(--brand-cyan-soft);
     }
 
-    /* —— Hero —— */
+    /* â€”â€” Hero â€”â€” */
     .hero {
         @apply relative overflow-hidden;
         background-color: var(--brand-teal-deep);
@@ -285,7 +285,7 @@
         @apply block w-full h-[70px] sm:h-[90px];
     }
 
-    /* —— Features —— */
+    /* â€”â€” Features â€”â€” */
     .feature-grid {
         @apply relative z-20 mx-auto -mt-16 grid max-w-7xl gap-4 px-4 sm:-mt-20 sm:grid-cols-3 sm:gap-5 sm:px-6 lg:px-8;
     }
@@ -323,7 +323,7 @@
         color: var(--brand-teal);
     }
 
-    /* —— Cooperation selector —— */
+    /* â€”â€” Cooperation selector â€”â€” */
     .cooperation-selector {
         @apply mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8;
     }
@@ -348,7 +348,7 @@
         @apply mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 sm:gap-6;
     }
 
-    /* —— Stats —— */
+    /* â€”â€” Stats â€”â€” */
     .stats-bar {
         @apply mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 lg:px-8;
     }
@@ -382,7 +382,7 @@
         color: var(--brand-muted);
     }
 
-    /* —— Category / year grids —— */
+    /* â€”â€” Category / year grids â€”â€” */
     .category-grid {
         @apply mx-auto grid max-w-7xl gap-5 px-4 py-12 sm:grid-cols-2 sm:px-6 md:grid-cols-3 lg:grid-cols-5 lg:px-8;
     }
@@ -427,7 +427,7 @@
         background-color: var(--brand-teal-dark);
     }
 
-    /* —— Documents —— */
+    /* â€”â€” Documents â€”â€” */
     .document-grid {
         @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
     }
@@ -470,7 +470,7 @@
         color: var(--brand-muted);
     }
 
-    /* —— Breadcrumb —— */
+    /* â€”â€” Breadcrumb â€”â€” */
     .breadcrumb-bar {
         @apply mx-auto max-w-7xl px-4 pt-6 text-sm sm:px-6 lg:px-8;
         color: var(--brand-muted);
@@ -498,7 +498,7 @@
         color: var(--brand-teal-deep);
     }
 
-    /* —— Footer —— */
+    /* â€”â€” Footer â€”â€” */
     .site-footer {
         @apply mt-auto w-full text-white;
         background-color: var(--brand-teal-deep);
@@ -542,7 +542,7 @@
         color: var(--brand-teal);
     }
 
-    /* —— Page content helpers —— */
+    /* â€”â€” Page content helpers â€”â€” */
     .page-panel {
         @apply rounded-2xl bg-white p-6 sm:p-8;
         border: 1px solid var(--brand-border);
@@ -580,130 +580,5 @@
 
     [x-cloak] {
         display: none !important;
-    }
-
-    /* —— Partnership application wizard —— */
-    .pa-shell {
-        @apply mx-auto w-full max-w-[1050px] px-4 py-8 sm:px-6 sm:py-10;
-    }
-
-    .pa-card {
-        @apply rounded-2xl bg-white p-5 sm:p-8;
-        border: 1px solid var(--brand-border);
-    }
-
-    .pa-progress {
-        @apply mb-6 overflow-x-auto pb-1;
-    }
-
-    .pa-progress__track {
-        @apply flex min-w-max items-center gap-1 text-xs font-semibold;
-        color: var(--brand-muted);
-    }
-
-    .pa-dot {
-        @apply inline-flex h-7 w-7 items-center justify-center rounded-full border text-[11px];
-        border-color: var(--brand-border);
-        background: #fff;
-    }
-
-    .pa-dot--active {
-        background: var(--brand-teal);
-        border-color: var(--brand-teal);
-        color: #fff;
-    }
-
-    .pa-dot--done {
-        background: rgba(10, 110, 110, 0.12);
-        border-color: var(--brand-teal);
-        color: var(--brand-teal-deep);
-    }
-
-    .pa-line {
-        @apply h-0.5 w-5 sm:w-8;
-        background: var(--brand-border);
-    }
-
-    .pa-line--done {
-        background: var(--brand-teal);
-    }
-
-    .pa-label {
-        @apply mb-1.5 block text-sm font-semibold;
-        color: var(--brand-teal-deep);
-    }
-
-    .pa-hint {
-        @apply mt-1 text-xs;
-        color: var(--brand-muted);
-    }
-
-    .pa-input,
-    .pa-textarea,
-    .pa-select {
-        @apply w-full rounded-xl border bg-white px-3 py-2.5 text-sm outline-none transition;
-        border-color: var(--brand-border);
-        color: var(--brand-text);
-    }
-
-    .pa-input:focus,
-    .pa-textarea:focus,
-    .pa-select:focus {
-        border-color: var(--brand-teal);
-        box-shadow: 0 0 0 3px rgba(10, 110, 110, 0.12);
-    }
-
-    .pa-textarea {
-        @apply min-h-[110px] resize-y;
-    }
-
-    .pa-choice-grid {
-        @apply grid gap-2 sm:grid-cols-2;
-    }
-
-    .pa-choice {
-        @apply flex cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-sm transition;
-        border-color: var(--brand-border);
-        color: var(--brand-text);
-    }
-
-    .pa-choice:hover {
-        border-color: var(--brand-teal);
-        background: rgba(10, 110, 110, 0.04);
-    }
-
-    .pa-choice input {
-        @apply mt-0.5;
-        accent-color: var(--brand-teal);
-    }
-
-    .pa-actions {
-        @apply mt-8 flex flex-wrap items-center justify-between gap-3 border-t pt-5;
-        border-color: var(--brand-border);
-    }
-
-    .pa-error {
-        @apply mt-1 text-xs text-red-600;
-    }
-
-    .pa-honeypot {
-        position: absolute !important;
-        left: -10000px;
-        width: 1px;
-        height: 1px;
-        overflow: hidden;
-    }
-
-    .pa-summary {
-        @apply space-y-2 rounded-xl p-4 text-sm;
-        background: rgba(10, 110, 110, 0.05);
-        border: 1px solid var(--brand-border);
-        color: var(--brand-text);
-    }
-
-    .pa-file {
-        @apply rounded-xl border border-dashed px-4 py-4 text-sm;
-        border-color: var(--brand-border);
-        color: var(--brand-muted);
     }
 }
