@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 use App\Http\Controllers\Admin\InstitutionFolderController;
+use App\Http\Controllers\Admin\PartnershipApplicationController as AdminPartnershipApplicationController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\YearFolderController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\DocumentFileController;
 use App\Http\Controllers\DocumentRequestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PartnershipApplicationController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +24,14 @@ Route::get('/profil', [PageController::class, 'profil'])->name('pages.profil');
 Route::get('/mitra', [PageController::class, 'mitra'])->name('pages.mitra');
 Route::get('/skema-kerjasama', [PageController::class, 'skema'])->name('pages.skema');
 Route::get('/kontak', [PageController::class, 'kontak'])->name('pages.kontak');
-Route::get('/ajukan-kerjasama', [PageController::class, 'ajukan'])->name('pages.ajukan');
+
+Route::get('/ajukan-kerjasama', [PartnershipApplicationController::class, 'create'])
+    ->name('partnership-applications.create');
+Route::post('/ajukan-kerjasama', [PartnershipApplicationController::class, 'store'])
+    ->middleware('throttle:'.config('partnership_applications.rate_limit_per_hour', 5).',60')
+    ->name('partnership-applications.store');
+Route::get('/ajukan-kerjasama/berhasil/{application:public_token}', [PartnershipApplicationController::class, 'success'])
+    ->name('partnership-applications.success');
 
 Route::prefix('kerjasama')->name('cooperation.')->group(function () {
     Route::get('{section:slug}', [CooperationController::class, 'section'])->name('section');
@@ -93,6 +102,17 @@ Route::prefix('admin')
         Route::post('access-requests/{accessRequest}/approve', [AccessRequestController::class, 'approve'])->name('access-requests.approve');
         Route::post('access-requests/{accessRequest}/reject', [AccessRequestController::class, 'reject'])->name('access-requests.reject');
         Route::post('access-requests/{accessRequest}/revoke', [AccessRequestController::class, 'revoke'])->name('access-requests.revoke');
+
+        Route::get('partnership-applications', [AdminPartnershipApplicationController::class, 'index'])
+            ->name('partnership-applications.index');
+        Route::get('partnership-applications/{application}', [AdminPartnershipApplicationController::class, 'show'])
+            ->name('partnership-applications.show');
+        Route::patch('partnership-applications/{application}/status', [AdminPartnershipApplicationController::class, 'updateStatus'])
+            ->name('partnership-applications.status');
+        Route::get(
+            'partnership-applications/{application}/attachments/{attachment}/download',
+            [AdminPartnershipApplicationController::class, 'downloadAttachment']
+        )->name('partnership-applications.attachments.download');
 
         Route::get('users', [UserController::class, 'index'])->name('users.index');
         Route::get('users/create', [UserController::class, 'create'])->name('users.create');

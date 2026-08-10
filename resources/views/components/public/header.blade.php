@@ -31,7 +31,7 @@
             <a href="{{ route('pages.mitra') }}" class="nav-link {{ $active === 'mitra' ? 'nav-link-active' : '' }}">Mitra</a>
             <a href="{{ route('pages.skema') }}" class="nav-link {{ $active === 'skema' ? 'nav-link-active' : '' }}">Skema Kerjasama</a>
             <a href="{{ route('pages.kontak') }}" class="nav-link {{ $active === 'kontak' ? 'nav-link-active' : '' }}">Kontak</a>
-            <a href="{{ route('pages.ajukan') }}" class="btn-cta ml-3 !py-2 !text-xs">
+            <a href="{{ route('partnership-applications.create') }}" class="btn-cta ml-3 !py-2 !text-xs">
                 <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
                 Ajukan Kerjasama
             </a>
@@ -64,7 +64,7 @@
             <a href="{{ route('pages.mitra') }}" class="nav-link {{ $active === 'mitra' ? 'nav-link-active' : '' }}">Mitra</a>
             <a href="{{ route('pages.skema') }}" class="nav-link {{ $active === 'skema' ? 'nav-link-active' : '' }}">Skema Kerjasama</a>
             <a href="{{ route('pages.kontak') }}" class="nav-link {{ $active === 'kontak' ? 'nav-link-active' : '' }}">Kontak</a>
-            <a href="{{ route('pages.ajukan') }}" class="btn-cta mt-2 !text-xs">
+            <a href="{{ route('partnership-applications.create') }}" class="btn-cta mt-2 !text-xs">
                 <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
                 Ajukan Kerjasama
             </a>

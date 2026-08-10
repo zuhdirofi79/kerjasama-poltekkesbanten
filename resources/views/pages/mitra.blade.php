@@ -29,7 +29,7 @@
 
     <div class="flex flex-wrap gap-3">
         <a href="{{ route('home') }}#mitra" class="btn-solid">Lihat Jalur Kerjasama</a>
-        <a href="{{ route('pages.ajukan') }}" class="btn-outline">
+        <a href="{{ route('partnership-applications.create') }}" class="btn-outline">
             <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
             Ajukan Kerjasama
         </a>

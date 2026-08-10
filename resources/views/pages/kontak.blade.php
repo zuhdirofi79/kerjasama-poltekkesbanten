@@ -33,7 +33,7 @@
                 <li>Bantuan akses dokumen (setelah login Google)</li>
             </ul>
         </div>
-        <a href="{{ route('pages.ajukan') }}" class="btn-cta inline-flex">
+        <a href="{{ route('partnership-applications.create') }}" class="btn-cta inline-flex">
             <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
             Ajukan Kerjasama
         </a>

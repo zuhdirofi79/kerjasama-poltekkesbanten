@@ -39,6 +39,19 @@
             <a href="{{ route('admin.years.index') }}" class="admin-nav-link {{ request()->routeIs('admin.years.*') ? 'admin-nav-link-active' : '' }}">Folder Tahun</a>
             <a href="{{ route('admin.institutions.index') }}" class="admin-nav-link {{ request()->routeIs('admin.institutions.*') ? 'admin-nav-link-active' : '' }}">Institusi</a>
             <a href="{{ route('admin.documents.index') }}" class="admin-nav-link {{ request()->routeIs('admin.documents.*') ? 'admin-nav-link-active' : '' }}">Dokumen</a>
+            @if(auth()->user()->role?->canManagePartnershipApplications())
+                @php
+                    $partnershipSubmittedCount = \App\Models\PartnershipApplication::query()
+                        ->where('status', \App\Enums\PartnershipApplicationStatus::Submitted)
+                        ->count();
+                @endphp
+                <a href="{{ route('admin.partnership-applications.index') }}" class="admin-nav-link {{ request()->routeIs('admin.partnership-applications.*') ? 'admin-nav-link-active' : '' }}">
+                    Pengajuan Kerjasama
+                    @if($partnershipSubmittedCount > 0)
+                        <span class="ml-1 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-amber-400 px-1.5 text-[10px] font-bold text-teal-950">{{ $partnershipSubmittedCount }}</span>
+                    @endif
+                </a>
+            @endif
             @if(auth()->user()->role?->canManageAccessRequests())
                 <a href="{{ route('admin.access-requests.index') }}" class="admin-nav-link {{ request()->routeIs('admin.access-requests.*') ? 'admin-nav-link-active' : '' }}">Permintaan Akses</a>
             @endif

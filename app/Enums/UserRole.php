@@ -38,4 +38,9 @@ enum UserRole: string
     {
         return in_array($this, [self::Superadmin1, self::Superadmin2], true);
     }
+
+    public function canManagePartnershipApplications(): bool
+    {
+        return $this->isStaff();
+    }
 }

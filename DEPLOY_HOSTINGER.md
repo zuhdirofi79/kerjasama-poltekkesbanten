@@ -281,3 +281,44 @@ Keep a DB dump + copy of `storage/app/private/kerjasama` before risky deploys â€
 - `Document` model hides `private_file_path` from arrays/JSON.
 - SA2 cannot update/delete SA1 (`UserPolicy`).
 - Public registration is commented out in `routes/auth.php`.
+
+## 12. Partnership applications (`/ajukan-kerjasama`)
+
+Native Laravel form (not Tally). Attachments live on the same private disk under:
+
+`storage/app/private/kerjasama/partnership-applications/{year}/{uuid}/...`
+
+Deploy steps after uploading source (never `migrate:fresh`):
+
+```bash
+cd ~/domains/kerjasama.poltekkesbanten.ac.id/laravel-kerjasama
+
+php artisan migrate --force
+
+# Build assets locally or on a machine with Node, then sync build:
+# npm ci && npm run build
+mv ../public_html/build ../public_html/build-backup-$(date +%Y%m%d-%H%M)
+cp -a public/build ../public_html/build
+
+php artisan optimize:clear
+php artisan optimize
+```
+
+Production `.env` must keep:
+
+```
+APP_ENV=production
+APP_DEBUG=false
+PARTNERSHIP_APPLICATION_MAX_UPLOAD_MB=10
+```
+
+Ensure SMTP is configured so Superadmin1/2 and applicants receive mail (mail failure does not block DB save).
+
+Post-deploy checks:
+
+```bash
+curl -I https://kerjasama.poltekkesbanten.ac.id/ajukan-kerjasama
+# Expect HTTP 200 (not 500 / PageController missing)
+```
+
+Then purge Hostinger cache/CDN, submit one test application, verify Admin â†’ Pengajuan Kerjasama, and confirm attachment download requires staff auth.

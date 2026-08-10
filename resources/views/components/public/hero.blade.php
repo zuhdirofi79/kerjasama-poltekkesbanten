@@ -45,7 +45,7 @@
                     <img src="{{ asset('images/icons/icon-users.svg') }}" alt="" aria-hidden="true">
                     Lihat Mitra
                 </a>
-                <a href="{{ route('pages.ajukan') }}" class="btn-outline {{ $mode === 'category' ? 'btn-outline--on-dark' : '' }}">
+                <a href="{{ route('partnership-applications.create') }}" class="btn-outline {{ $mode === 'category' ? 'btn-outline--on-dark' : '' }}">
                     <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
                     Ajukan Kerjasama
                 </a>

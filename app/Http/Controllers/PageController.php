@@ -25,9 +25,4 @@ class PageController extends Controller
     {
         return view('pages.kontak');
     }
-
-    public function ajukan(): View
-    {
-        return view('pages.ajukan');
-    }
 }
