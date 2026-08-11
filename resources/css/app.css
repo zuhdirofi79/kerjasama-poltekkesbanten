@@ -654,6 +654,126 @@
         color: var(--brand-muted);
     }
 
+    /* —— Contact person (Kontak page only) —— */
+    .contact-person-section {
+        display: block;
+    }
+
+    .contact-person-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+    }
+
+    .contact-person-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.95rem 1.05rem;
+        border-radius: 0.85rem;
+        border: 1px solid var(--brand-border);
+        background-color: #ffffff;
+    }
+
+    .contact-person-main {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 0;
+        flex: 1 1 auto;
+    }
+
+    .contact-person-icon {
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.7rem;
+        background-color: var(--brand-cyan-soft);
+        color: var(--brand-teal-deep);
+    }
+
+    .contact-person-icon svg,
+    .contact-person-whatsapp svg {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+        max-width: 20px;
+        max-height: 20px;
+        display: block;
+        flex: none;
+    }
+
+    .contact-person-text {
+        min-width: 0;
+    }
+
+    .contact-person-name {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--brand-teal-deep);
+        word-break: break-word;
+    }
+
+    .contact-person-phone {
+        display: inline-block;
+        margin-top: 0.15rem;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        font-weight: 500;
+        color: var(--brand-teal);
+        text-decoration: none;
+    }
+
+    .contact-person-phone:hover {
+        text-decoration: underline;
+    }
+
+    .contact-person-phone:focus-visible,
+    .contact-person-whatsapp:focus-visible {
+        outline: 2px solid var(--brand-teal);
+        outline-offset: 3px;
+        border-radius: 0.35rem;
+    }
+
+    .contact-person-whatsapp {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 0.7rem;
+        color: #128c7e;
+        background-color: var(--brand-cyan-soft);
+        text-decoration: none;
+        transition: background-color 140ms ease, color 140ms ease;
+    }
+
+    .contact-person-whatsapp:hover {
+        color: #075e54;
+        background-color: #d7f1ef;
+    }
+
+    @media (max-width: 640px) {
+        .contact-person-item {
+            align-items: flex-start;
+            padding: 0.9rem 0.95rem;
+        }
+
+        .contact-person-whatsapp {
+            margin-top: 0.1rem;
+        }
+    }
+
     /* Admin compatibility */
     .card-surface {
         @apply rounded-xl border bg-white shadow-sm;
