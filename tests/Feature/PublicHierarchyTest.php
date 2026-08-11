@@ -22,8 +22,9 @@ class PublicHierarchyTest extends TestCase
         $response->assertOk();
         $response->assertSee('Kerjasama Dalam Negeri');
         $response->assertSee('Kerjasama Luar Negeri');
-        $response->assertSee('Praktik Klinik');
-        $response->assertSee(route('partnership-applications.create'), false);    }
+        $response->assertDontSee('feature-grid', false);
+        $response->assertSee(route('partnership-applications.create'), false);
+    }
 
     public function test_domestic_page_shows_exact_five_categories(): void
     {

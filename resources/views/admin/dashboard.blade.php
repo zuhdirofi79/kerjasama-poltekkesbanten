@@ -7,7 +7,7 @@
 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
     @foreach([
         'years' => 'Folder Tahun',
-        'institutions' => 'Institusi',
+        'institutions' => 'Folder',
         'documents' => 'Dokumen',
         'pending_requests' => 'Pending Akses',
         'users' => 'Pengguna',

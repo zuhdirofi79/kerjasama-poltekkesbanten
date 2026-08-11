@@ -10,42 +10,7 @@
     subtitle="Membangun kemitraan strategis antara Poltekkes Kemenkes Banten dan institusi layanan kesehatan untuk pendidikan, penelitian, dan pengabdian masyarakat."
 />
 
-<div class="feature-grid">
-    <article class="feature-card">
-        <div class="feature-card__icon">
-            <img src="{{ asset('images/icons/icon-stethoscope.svg') }}" alt="" aria-hidden="true">
-        </div>
-        <div class="feature-card__body">
-            <h2 class="feature-card__title">Praktik Klinik</h2>
-            <p class="feature-card__desc">Fasilitas praktik mahasiswa di rumah sakit mitra</p>
-        </div>
-        <span class="feature-card__chevron" aria-hidden="true">&rsaquo;</span>
-    </article>
-
-    <article class="feature-card">
-        <div class="feature-card__icon">
-            <img src="{{ asset('images/icons/icon-microscope.svg') }}" alt="" aria-hidden="true">
-        </div>
-        <div class="feature-card__body">
-            <h2 class="feature-card__title">Penelitian</h2>
-            <p class="feature-card__desc">Kolaborasi riset kesehatan berbasis bukti</p>
-        </div>
-        <span class="feature-card__chevron" aria-hidden="true">&rsaquo;</span>
-    </article>
-
-    <article class="feature-card">
-        <div class="feature-card__icon">
-            <img src="{{ asset('images/icons/icon-pengabdian.svg') }}" alt="" aria-hidden="true">
-        </div>
-        <div class="feature-card__body">
-            <h2 class="feature-card__title">Pengabdian</h2>
-            <p class="feature-card__desc">Pelayanan masyarakat bersama mitra kesehatan</p>
-        </div>
-        <span class="feature-card__chevron" aria-hidden="true">&rsaquo;</span>
-    </article>
-</div>
-
-<section id="mitra" class="cooperation-selector">
+<section id="mitra" class="cooperation-selector cooperation-selector--after-hero">
     <h2 class="cooperation-selector__title">Kerjasama</h2>
     <div class="coop-pill-grid">
         @foreach($sections as $section)

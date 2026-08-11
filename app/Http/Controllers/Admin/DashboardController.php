@@ -6,7 +6,7 @@ use App\Enums\AccessRequestStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Document;
 use App\Models\DocumentAccessRequest;
-use App\Models\InstitutionFolder;
+use App\Models\DocumentFolder;
 use App\Models\User;
 use App\Models\YearFolder;
 use Illuminate\View\View;
@@ -17,7 +17,7 @@ class DashboardController extends Controller
     {
         $stats = [
             'years' => YearFolder::query()->count(),
-            'institutions' => InstitutionFolder::query()->count(),
+            'institutions' => DocumentFolder::query()->count(),
             'documents' => Document::query()->count(),
             'pending_requests' => DocumentAccessRequest::query()->pending()->count(),
             'users' => User::query()->count(),

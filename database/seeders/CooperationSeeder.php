@@ -6,6 +6,7 @@ use App\Enums\SectionType;
 use App\Models\CooperationCategory;
 use App\Models\CooperationSection;
 use App\Models\YearFolder;
+use App\Services\DefaultYearFolderProvisioner;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -111,8 +112,10 @@ class CooperationSeeder extends Seeder
                         'is_active' => true,
                     ])->save();
 
+                    $provisioner = app(DefaultYearFolderProvisioner::class);
+
                     foreach ($years as $index => $year) {
-                        YearFolder::query()->updateOrCreate(
+                        $yearFolder = YearFolder::query()->updateOrCreate(
                             [
                                 'category_id' => $category->id,
                                 'year' => $year,
@@ -123,6 +126,8 @@ class CooperationSeeder extends Seeder
                                 'is_active' => true,
                             ],
                         );
+
+                        $provisioner->provision($yearFolder);
                     }
                 }
             }

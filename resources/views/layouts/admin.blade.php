@@ -37,7 +37,7 @@
         <nav class="flex-1 space-y-1 px-3 py-4">
             <a href="{{ route('admin.dashboard') }}" class="admin-nav-link {{ request()->routeIs('admin.dashboard') ? 'admin-nav-link-active' : '' }}">Dashboard</a>
             <a href="{{ route('admin.years.index') }}" class="admin-nav-link {{ request()->routeIs('admin.years.*') ? 'admin-nav-link-active' : '' }}">Folder Tahun</a>
-            <a href="{{ route('admin.institutions.index') }}" class="admin-nav-link {{ request()->routeIs('admin.institutions.*') ? 'admin-nav-link-active' : '' }}">Institusi</a>
+            <a href="{{ route('admin.folders.index') }}" class="admin-nav-link {{ request()->routeIs('admin.folders.*') ? 'admin-nav-link-active' : '' }}">Repository</a>
             <a href="{{ route('admin.documents.index') }}" class="admin-nav-link {{ request()->routeIs('admin.documents.*') ? 'admin-nav-link-active' : '' }}">Dokumen</a>
             @if(auth()->user()->role?->canManagePartnershipApplications())
                 @php

@@ -42,6 +42,16 @@ class YearFolder extends Model
         return $this->hasMany(InstitutionFolder::class, 'year_folder_id');
     }
 
+    public function documentFolders(): HasMany
+    {
+        return $this->hasMany(DocumentFolder::class, 'year_folder_id');
+    }
+
+    public function rootDocumentFolders(): HasMany
+    {
+        return $this->hasMany(DocumentFolder::class, 'year_folder_id')->whereNull('parent_id');
+    }
+
     public function documents(): HasMany
     {
         return $this->hasMany(Document::class, 'year_folder_id');

@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AccessRequestController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
+use App\Http\Controllers\Admin\DocumentFolderController;
 use App\Http\Controllers\Admin\InstitutionFolderController;
 use App\Http\Controllers\Admin\PartnershipApplicationController as AdminPartnershipApplicationController;
 use App\Http\Controllers\Admin\UserController;
@@ -37,6 +38,8 @@ Route::prefix('kerjasama')->name('cooperation.')->group(function () {
     Route::get('{section:slug}', [CooperationController::class, 'section'])->name('section');
     Route::get('{section:slug}/{category:slug}', [CooperationController::class, 'category'])->name('category');
     Route::get('{section:slug}/{category:slug}/{year}', [CooperationController::class, 'year'])->name('year');
+    Route::get('{section:slug}/{category:slug}/{year}/folder/{folder:uuid}', [CooperationController::class, 'folder'])
+        ->name('folder');
     Route::get('{section:slug}/{category:slug}/{year}/{institution:slug}', [CooperationController::class, 'institution'])
         ->name('institution');
 });
@@ -83,6 +86,13 @@ Route::prefix('admin')
         Route::put('years/{yearFolder}', [YearFolderController::class, 'update'])->name('years.update');
         Route::delete('years/{yearFolder}', [YearFolderController::class, 'destroy'])->name('years.destroy');
 
+        Route::get('folders', [DocumentFolderController::class, 'index'])->name('folders.index');
+        Route::post('folders', [DocumentFolderController::class, 'store'])->name('folders.store');
+        Route::put('folders/{folder:uuid}', [DocumentFolderController::class, 'update'])->name('folders.update');
+        Route::post('folders/{folder:uuid}/move', [DocumentFolderController::class, 'move'])->name('folders.move');
+        Route::post('folders/{folder:uuid}/reorder', [DocumentFolderController::class, 'reorder'])->name('folders.reorder');
+        Route::delete('folders/{folder:uuid}', [DocumentFolderController::class, 'destroy'])->name('folders.destroy');
+
         Route::get('institutions', [InstitutionFolderController::class, 'index'])->name('institutions.index');
         Route::get('institutions/create', [InstitutionFolderController::class, 'create'])->name('institutions.create');
         Route::post('institutions', [InstitutionFolderController::class, 'store'])->name('institutions.store');
@@ -95,6 +105,7 @@ Route::prefix('admin')
         Route::post('documents', [AdminDocumentController::class, 'store'])->name('documents.store');
         Route::get('documents/{document}/edit', [AdminDocumentController::class, 'edit'])->name('documents.edit');
         Route::put('documents/{document}', [AdminDocumentController::class, 'update'])->name('documents.update');
+        Route::post('documents/{document}/move', [AdminDocumentController::class, 'move'])->name('documents.move');
         Route::delete('documents/{document}', [AdminDocumentController::class, 'destroy'])->name('documents.destroy');
 
         Route::get('access-requests', [AccessRequestController::class, 'index'])->name('access-requests.index');

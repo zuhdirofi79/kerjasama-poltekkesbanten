@@ -16,11 +16,11 @@
         <textarea name="description" rows="3" class="mt-1 w-full rounded-lg border-teal-200">{{ old('description', $document->description) }}</textarea>
     </div>
     <div>
-        <label class="block text-sm font-medium">Institusi</label>
-        <select name="institution_folder_id" class="mt-1 w-full rounded-lg border-teal-200">
-            <option value="">— Tingkat tahun —</option>
-            @foreach($institutions as $inst)
-                <option value="{{ $inst->id }}" @selected(old('institution_folder_id', $document->institution_folder_id) == $inst->id)>{{ $inst->name }}</option>
+        <label class="block text-sm font-medium">Folder</label>
+        <select name="document_folder_id" class="mt-1 w-full rounded-lg border-teal-200">
+            <option value="">— Tingkat tahun (root) —</option>
+            @foreach($folders as $folder)
+                <option value="{{ $folder->id }}" @selected(old('document_folder_id', $document->document_folder_id) == $folder->id)>{{ $folder->name }}</option>
             @endforeach
         </select>
     </div>

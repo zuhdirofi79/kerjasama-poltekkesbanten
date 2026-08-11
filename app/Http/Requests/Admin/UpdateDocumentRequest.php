@@ -24,7 +24,7 @@ class UpdateDocumentRequest extends FormRequest
         return [
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
-            'institution_folder_id' => ['nullable', 'exists:institution_folders,id'],
+            'document_folder_id' => ['nullable', 'exists:document_folders,id'],
             'is_active' => ['sometimes', 'boolean'],
             'document' => [
                 'nullable',

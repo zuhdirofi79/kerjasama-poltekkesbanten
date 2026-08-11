@@ -16,6 +16,7 @@ class Document extends Model
     protected $fillable = [
         'year_folder_id',
         'institution_folder_id',
+        'document_folder_id',
         'title',
         'description',
         'original_filename',
@@ -52,6 +53,11 @@ class Document extends Model
     public function institutionFolder(): BelongsTo
     {
         return $this->belongsTo(InstitutionFolder::class, 'institution_folder_id');
+    }
+
+    public function documentFolder(): BelongsTo
+    {
+        return $this->belongsTo(DocumentFolder::class, 'document_folder_id');
     }
 
     public function uploader(): BelongsTo

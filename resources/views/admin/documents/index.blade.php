@@ -30,7 +30,7 @@
                 <td class="px-4 py-2 font-semibold">{{ $document->title }}</td>
                 <td class="px-4 py-2 text-xs">
                     {{ $document->yearFolder?->category?->name }} / {{ $document->yearFolder?->year }}
-                    @if($document->institutionFolder) / {{ $document->institutionFolder->name }} @endif
+                    @if($document->documentFolder) / {{ $document->documentFolder->name }} @endif
                 </td>
                 <td class="px-4 py-2">{{ $document->is_active ? 'Aktif' : 'Nonaktif' }}</td>
                 <td class="px-4 py-2 text-right space-x-2">

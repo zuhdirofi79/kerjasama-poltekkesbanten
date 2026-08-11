@@ -15,11 +15,13 @@
         </select>
     </div>
     <div>
-        <label class="block text-sm font-medium">Institusi (opsional)</label>
-        <select name="institution_folder_id" class="mt-1 w-full rounded-lg border-teal-200">
-            <option value="">— Tingkat tahun —</option>
-            @foreach($institutions as $inst)
-                <option value="{{ $inst->id }}" data-year="{{ $inst->year_folder_id }}">{{ $inst->name }} (YF#{{ $inst->year_folder_id }})</option>
+        <label class="block text-sm font-medium">Folder (opsional)</label>
+        <select name="document_folder_id" class="mt-1 w-full rounded-lg border-teal-200">
+            <option value="">— Tingkat tahun (root) —</option>
+            @foreach($folders as $folder)
+                <option value="{{ $folder->id }}" data-year="{{ $folder->year_folder_id }}" @selected($selectedFolderId == $folder->id)>
+                    {{ $folder->name }} (YF#{{ $folder->year_folder_id }})
+                </option>
             @endforeach
         </select>
     </div>

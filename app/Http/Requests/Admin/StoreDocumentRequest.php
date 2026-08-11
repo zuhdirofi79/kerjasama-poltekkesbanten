@@ -19,7 +19,7 @@ class StoreDocumentRequest extends FormRequest
 
         return [
             'year_folder_id' => ['required', 'exists:year_folders,id'],
-            'institution_folder_id' => ['nullable', 'exists:institution_folders,id'],
+            'document_folder_id' => ['nullable', 'exists:document_folders,id'],
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
             'is_active' => ['sometimes', 'boolean'],

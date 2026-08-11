@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Document;
-use App\Models\InstitutionFolder;
+use App\Models\DocumentFolder;
 use App\Models\YearFolder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -22,17 +22,22 @@ class DocumentStorageService
         UploadedFile $file,
         UploadedFile $preview,
         YearFolder $yearFolder,
-        ?InstitutionFolder $institution = null,
+        ?DocumentFolder $folder = null,
         array $meta = [],
         ?int $uploadedBy = null,
     ): Document {
         $this->assertAllowedDocument($file);
         $this->assertAllowedPreview($preview);
 
+        if ($folder && $folder->year_folder_id !== $yearFolder->id) {
+            throw new InvalidArgumentException('Folder dokumen tidak cocok dengan folder tahun.');
+        }
+
         $disk = config('documents.private_disk');
         $publicDisk = config('documents.public_preview_disk');
 
-        $relativeDir = $this->buildRelativeDirectory($yearFolder, $institution);
+        // Physical path is year-scoped (UUID filename). Display hierarchy lives in DB only.
+        $relativeDir = $this->buildRelativeDirectory($yearFolder);
         $extension = strtolower($file->getClientOriginalExtension());
         $storedFilename = Str::uuid()->toString().'.'.$extension;
         $privatePath = trim($relativeDir.'/'.$storedFilename, '/');
@@ -49,7 +54,7 @@ class DocumentStorageService
                 $file,
                 $preview,
                 $yearFolder,
-                $institution,
+                $folder,
                 $meta,
                 $uploadedBy,
                 $disk,
@@ -73,7 +78,8 @@ class DocumentStorageService
 
                 $document = Document::query()->create([
                     'year_folder_id' => $yearFolder->id,
-                    'institution_folder_id' => $institution?->id,
+                    'document_folder_id' => $folder?->id,
+                    'institution_folder_id' => $folder?->legacy_institution_folder_id,
                     'title' => $meta['title'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
                     'description' => $meta['description'] ?? null,
                     'original_filename' => $file->getClientOriginalName(),
@@ -91,7 +97,7 @@ class DocumentStorageService
                 $this->auditLogService->log('document.uploaded', $document, null, [
                     'title' => $document->title,
                     'year_folder_id' => $document->year_folder_id,
-                    'institution_folder_id' => $document->institution_folder_id,
+                    'document_folder_id' => $document->document_folder_id,
                 ]);
 
                 return $document;
@@ -231,19 +237,14 @@ class DocumentStorageService
         }
     }
 
-    private function buildRelativeDirectory(YearFolder $yearFolder, ?InstitutionFolder $institution): string
+    private function buildRelativeDirectory(YearFolder $yearFolder): string
     {
         $yearFolder->loadMissing('category.section');
 
         $section = $yearFolder->category->section->type->value;
         $category = $yearFolder->category->slug;
         $year = (string) $yearFolder->year;
-        $parts = ['kerjasama', $section, $category, $year];
 
-        if ($institution) {
-            $parts[] = $institution->slug;
-        }
-
-        return implode('/', $parts);
+        return implode('/', ['kerjasama', $section, $category, $year]);
     }
 }

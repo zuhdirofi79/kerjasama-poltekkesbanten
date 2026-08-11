@@ -8,14 +8,17 @@ use App\Http\Requests\Admin\UpdateYearFolderRequest;
 use App\Models\CooperationCategory;
 use App\Models\YearFolder;
 use App\Services\AuditLogService;
+use App\Services\DocumentFolderService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class YearFolderController extends Controller
 {
     public function __construct(
         private readonly AuditLogService $auditLogService,
+        private readonly DocumentFolderService $documentFolderService,
     ) {}
 
     public function index(Request $request): View
@@ -52,22 +55,28 @@ class YearFolderController extends Controller
         $category = CooperationCategory::query()->findOrFail($request->integer('category_id'));
         $year = (int) $request->validated('year');
 
-        $folder = YearFolder::query()->create([
-            'category_id' => $category->id,
-            'year' => $year,
-            'slug' => (string) $year,
-            'description' => $request->validated('description') ?? null,
-            'sort_order' => $request->validated('sort_order') ?? 0,
-            'is_active' => $request->boolean('is_active', true),
-            'created_by' => $request->user()->id,
-            'updated_by' => $request->user()->id,
-        ]);
+        $folder = DB::transaction(function () use ($request, $category, $year) {
+            $folder = YearFolder::query()->create([
+                'category_id' => $category->id,
+                'year' => $year,
+                'slug' => (string) $year,
+                'description' => $request->validated('description') ?? null,
+                'sort_order' => $request->validated('sort_order') ?? 0,
+                'is_active' => $request->boolean('is_active', true),
+                'created_by' => $request->user()->id,
+                'updated_by' => $request->user()->id,
+            ]);
+
+            $this->documentFolderService->provisionDefaultFolders($folder, $request->user()->id);
+
+            return $folder;
+        });
 
         $this->auditLogService->log('year_folder.created', $folder);
 
         return redirect()
             ->route('admin.years.index', ['category_id' => $category->id])
-            ->with('status', 'Folder tahun berhasil dibuat.');
+            ->with('status', 'Folder tahun berhasil dibuat beserta folder default.');
     }
 
     public function edit(YearFolder $yearFolder): View
@@ -112,7 +121,9 @@ class YearFolderController extends Controller
     {
         $this->authorize('delete', $yearFolder);
 
-        $hasChildren = $yearFolder->institutions()->exists() || $yearFolder->documents()->exists();
+        $hasChildren = $yearFolder->institutions()->exists()
+            || $yearFolder->documentFolders()->exists()
+            || $yearFolder->documents()->exists();
 
         if ($request->boolean('force')) {
             $this->authorize('forceDelete', $yearFolder);

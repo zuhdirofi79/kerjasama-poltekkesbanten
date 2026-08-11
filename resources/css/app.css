@@ -285,47 +285,13 @@
         @apply block w-full h-[70px] sm:h-[90px];
     }
 
-    /* â€”â€” Features â€”â€” */
-    .feature-grid {
-        @apply relative z-20 mx-auto -mt-16 grid max-w-7xl gap-4 px-4 sm:-mt-20 sm:grid-cols-3 sm:gap-5 sm:px-6 lg:px-8;
-    }
-
-    .feature-card {
-        @apply flex items-center gap-4 rounded-2xl bg-white px-5 py-5 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl;
-        border: 1px solid var(--brand-border);
-    }
-
-    .feature-card__icon {
-        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl;
-        background-color: var(--brand-cyan-soft);
-    }
-
-    .feature-card__icon img {
-        @apply h-7 w-7;
-    }
-
-    .feature-card__body {
-        @apply min-w-0 flex-1;
-    }
-
-    .feature-card__title {
-        @apply text-base font-bold;
-        color: var(--brand-teal-deep);
-    }
-
-    .feature-card__desc {
-        @apply mt-0.5 text-xs leading-snug sm:text-sm;
-        color: var(--brand-muted);
-    }
-
-    .feature-card__chevron {
-        @apply shrink-0 text-xl font-light;
-        color: var(--brand-teal);
-    }
-
-    /* â€”â€” Cooperation selector â€”â€” */
+    /* —— Cooperation selector —— */
     .cooperation-selector {
         @apply mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8;
+    }
+
+    .cooperation-selector--after-hero {
+        @apply pt-10 sm:pt-12;
     }
 
     .cooperation-selector__title {
@@ -468,6 +434,40 @@
     .institution-card__desc {
         @apply mt-2 line-clamp-2 text-sm;
         color: var(--brand-muted);
+    }
+
+    .folder-grid {
+        @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+    }
+
+    .folder-card {
+        @apply flex items-center gap-4 rounded-2xl bg-white px-5 py-5 transition hover:-translate-y-0.5 hover:shadow-md;
+        border: 1px solid var(--brand-border);
+    }
+
+    .folder-card__icon {
+        @apply flex h-12 w-12 shrink-0 items-center justify-center rounded-xl;
+        background-color: var(--brand-cyan-soft);
+        color: var(--brand-teal);
+    }
+
+    .folder-card__body {
+        @apply min-w-0 flex-1;
+    }
+
+    .folder-card__title {
+        @apply text-base font-bold leading-snug;
+        color: var(--brand-teal-deep);
+    }
+
+    .folder-card__meta {
+        @apply mt-0.5 text-xs;
+        color: var(--brand-muted);
+    }
+
+    .folder-card__chevron {
+        @apply shrink-0 text-xl font-light;
+        color: var(--brand-teal);
     }
 
     /* â€”â€” Breadcrumb â€”â€” */
