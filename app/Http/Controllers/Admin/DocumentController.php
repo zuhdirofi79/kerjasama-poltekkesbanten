@@ -11,6 +11,7 @@ use App\Models\DocumentFolder;
 use App\Models\YearFolder;
 use App\Services\DocumentFolderService;
 use App\Services\DocumentStorageService;
+use App\Support\DocumentFolderOptions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -45,13 +46,21 @@ class DocumentController extends Controller
         $this->authorize('create', Document::class);
 
         $yearFolders = YearFolder::query()->with('category.section')->ordered()->get();
-        $folders = DocumentFolder::query()->ordered()->get();
-        $selectedYearFolderId = $request->integer('year_folder_id') ?: null;
+        $selectedYearFolderId = $request->integer('year_folder_id')
+            ?: ($yearFolders->first()?->id);
+
         $selectedFolderId = $request->integer('document_folder_id') ?: null;
+        $folderOptions = $selectedYearFolderId
+            ? DocumentFolderOptions::forYear($selectedYearFolderId)
+            : [];
+
+        if ($selectedFolderId && ! collect($folderOptions)->contains(fn ($opt) => $opt['id'] === $selectedFolderId)) {
+            $selectedFolderId = null;
+        }
 
         return view('admin.documents.create', compact(
             'yearFolders',
-            'folders',
+            'folderOptions',
             'selectedYearFolderId',
             'selectedFolderId',
         ));
@@ -61,12 +70,12 @@ class DocumentController extends Controller
     {
         $yearFolder = YearFolder::query()->findOrFail($request->integer('year_folder_id'));
         $folder = $request->filled('document_folder_id')
-            ? DocumentFolder::query()->findOrFail($request->integer('document_folder_id'))
+            ? DocumentFolder::query()
+                ->whereKey($request->integer('document_folder_id'))
+                ->where('year_folder_id', $yearFolder->id)
+                ->active()
+                ->firstOrFail()
             : null;
-
-        if ($folder && $folder->year_folder_id !== $yearFolder->id) {
-            return back()->withErrors(['document_folder_id' => 'Folder tidak cocok dengan folder tahun.'])->withInput();
-        }
 
         try {
             $document = $this->documentStorageService->store(
@@ -98,12 +107,9 @@ class DocumentController extends Controller
         $this->authorize('update', $document);
 
         $document->load(['yearFolder.category.section', 'documentFolder']);
-        $folders = DocumentFolder::query()
-            ->where('year_folder_id', $document->year_folder_id)
-            ->ordered()
-            ->get();
+        $folderOptions = DocumentFolderOptions::forYear($document->year_folder_id);
 
-        return view('admin.documents.edit', compact('document', 'folders'));
+        return view('admin.documents.edit', compact('document', 'folderOptions'));
     }
 
     public function update(UpdateDocumentRequest $request, Document $document): RedirectResponse
@@ -115,10 +121,12 @@ class DocumentController extends Controller
         }
 
         if (array_key_exists('document_folder_id', $data) && $data['document_folder_id']) {
-            $folder = DocumentFolder::query()->findOrFail($data['document_folder_id']);
-            if ($folder->year_folder_id !== $document->year_folder_id) {
-                return back()->withErrors(['document_folder_id' => 'Folder tidak cocok dengan folder tahun.'])->withInput();
-            }
+            $folder = DocumentFolder::query()
+                ->whereKey($data['document_folder_id'])
+                ->where('year_folder_id', $document->year_folder_id)
+                ->active()
+                ->firstOrFail();
+            $data['document_folder_id'] = $folder->id;
             $data['institution_folder_id'] = $folder->legacy_institution_folder_id;
         } elseif (array_key_exists('document_folder_id', $data) && ! $data['document_folder_id']) {
             $data['document_folder_id'] = null;
@@ -145,9 +153,14 @@ class DocumentController extends Controller
 
     public function move(MoveDocumentRequest $request, Document $document): RedirectResponse
     {
-        $folder = $request->filled('document_folder_id')
-            ? DocumentFolder::query()->findOrFail($request->integer('document_folder_id'))
-            : null;
+        $folder = null;
+        if ($request->filled('document_folder_id')) {
+            $folder = DocumentFolder::query()
+                ->whereKey($request->integer('document_folder_id'))
+                ->where('year_folder_id', $document->year_folder_id)
+                ->active()
+                ->firstOrFail();
+        }
 
         try {
             $this->documentFolderService->moveDocument($document, $folder, $request->user()->id);

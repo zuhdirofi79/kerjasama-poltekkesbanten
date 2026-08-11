@@ -86,6 +86,9 @@ Route::prefix('admin')
         Route::put('years/{yearFolder}', [YearFolderController::class, 'update'])->name('years.update');
         Route::delete('years/{yearFolder}', [YearFolderController::class, 'destroy'])->name('years.destroy');
 
+        Route::get('years/{yearFolder:id}/document-folders', [DocumentFolderController::class, 'optionsForYear'])
+            ->name('years.document-folders');
+
         Route::get('folders', [DocumentFolderController::class, 'index'])->name('folders.index');
         Route::post('folders', [DocumentFolderController::class, 'store'])->name('folders.store');
         Route::put('folders/{folder:uuid}', [DocumentFolderController::class, 'update'])->name('folders.update');

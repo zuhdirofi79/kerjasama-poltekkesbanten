@@ -8,6 +8,16 @@
         <img src="{{ $document->previewUrl() }}" alt="" class="h-40 rounded-lg object-cover">
     @endif
     <div>
+        <p class="text-sm text-slate-600">
+            Tahun:
+            <span class="font-semibold text-teal-900">
+                {{ $document->yearFolder?->category?->section?->name }}
+                / {{ $document->yearFolder?->category?->name }}
+                / {{ $document->yearFolder?->year }}
+            </span>
+        </p>
+    </div>
+    <div>
         <label class="block text-sm font-medium">Judul</label>
         <input type="text" name="title" value="{{ old('title', $document->title) }}" required class="mt-1 w-full rounded-lg border-teal-200">
     </div>
@@ -19,10 +29,15 @@
         <label class="block text-sm font-medium">Folder</label>
         <select name="document_folder_id" class="mt-1 w-full rounded-lg border-teal-200">
             <option value="">— Tingkat tahun (root) —</option>
-            @foreach($folders as $folder)
-                <option value="{{ $folder->id }}" @selected(old('document_folder_id', $document->document_folder_id) == $folder->id)>{{ $folder->name }}</option>
+            @foreach($folderOptions as $folder)
+                <option value="{{ $folder['id'] }}" @selected(old('document_folder_id', $document->document_folder_id) == $folder['id'])>
+                    {{ $folder['label'] }}
+                </option>
             @endforeach
         </select>
+        @if(count($folderOptions) === 0)
+            <p class="mt-1 text-xs text-slate-500">Belum ada subfolder. Dokumen akan disimpan di tingkat tahun.</p>
+        @endif
     </div>
     <div>
         <label class="block text-sm font-medium">Ganti file dokumen (opsional)</label>

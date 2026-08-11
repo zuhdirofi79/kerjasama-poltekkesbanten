@@ -10,6 +10,8 @@ use App\Models\Document;
 use App\Models\DocumentFolder;
 use App\Models\YearFolder;
 use App\Services\DocumentFolderService;
+use App\Support\DocumentFolderOptions;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -20,6 +22,16 @@ class DocumentFolderController extends Controller
     public function __construct(
         private readonly DocumentFolderService $documentFolderService,
     ) {}
+
+    public function optionsForYear(YearFolder $yearFolder): JsonResponse
+    {
+        $this->authorize('viewAny', DocumentFolder::class);
+
+        return response()->json([
+            'year_folder_id' => $yearFolder->id,
+            'folders' => DocumentFolderOptions::forYear($yearFolder),
+        ]);
+    }
 
     public function index(Request $request): View
     {
