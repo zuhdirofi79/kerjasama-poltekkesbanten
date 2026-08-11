@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\YearFolderController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\CooperationController;
 use App\Http\Controllers\DocumentFileController;
+use App\Http\Controllers\DocumentPreviewController;
 use App\Http\Controllers\DocumentRequestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -46,6 +47,10 @@ Route::prefix('kerjasama')->name('cooperation.')->group(function () {
 
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
+// Public thumbnail only — never serves private originals.
+Route::get('/previews/{document}', [DocumentPreviewController::class, 'show'])
+    ->name('documents.preview');
 
 Route::middleware('auth')->group(function () {
     Route::get('/documents/{document}/request', [DocumentRequestController::class, 'show'])

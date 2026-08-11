@@ -6,14 +6,27 @@
 @php
     $user = auth()->user();
     $canOpen = $user && app(\App\Services\AccessRequestService::class)->userCanViewDocument($user, $document);
+    $previewUrl = $document->previewUrl();
 @endphp
 
 <article {{ $attributes->merge(['class' => 'document-card']) }}>
     <div class="document-card__preview">
-        @if($document->previewUrl())
-            <img src="{{ $document->previewUrl() }}" alt="Preview {{ $document->title }}" class="h-full w-full object-cover">
+        @if($previewUrl)
+            <img
+                src="{{ $previewUrl }}"
+                alt="Preview {{ $document->title }}"
+                class="document-card__preview-img"
+                loading="lazy"
+                decoding="async"
+                onerror="this.classList.add('is-broken'); this.nextElementSibling?.classList.remove('hidden');"
+            >
+            <div class="document-card__preview-fallback hidden" aria-hidden="true">
+                <span>Preview belum tersedia</span>
+            </div>
         @else
-            <div class="flex h-full items-center justify-center text-sm" style="color: var(--brand-teal);">Tidak ada preview</div>
+            <div class="document-card__preview-fallback">
+                <span>Preview belum tersedia</span>
+            </div>
         @endif
     </div>
     <div class="document-card__body">

@@ -404,7 +404,40 @@
     }
 
     .document-card__preview {
-        @apply aspect-[4/3] bg-[var(--brand-cyan-soft)];
+        position: relative;
+        width: 100%;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background-color: var(--brand-cyan-soft);
+    }
+
+    .document-card__preview-img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+    }
+
+    .document-card__preview-img.is-broken {
+        display: none;
+    }
+
+    .document-card__preview-fallback {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+        text-align: center;
+        font-size: 0.8125rem;
+        color: var(--brand-teal);
+        background-color: var(--brand-cyan-soft);
+    }
+
+    .document-card__preview-fallback.hidden {
+        display: none;
     }
 
     .document-card__body {

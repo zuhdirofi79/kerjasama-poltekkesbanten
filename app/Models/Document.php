@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Storage;
 
 class Document extends Model
 {
@@ -82,11 +81,48 @@ class Document extends Model
 
     public function previewUrl(): ?string
     {
-        if (! $this->preview_image_path) {
+        if (! $this->normalizedPreviewPath()) {
             return null;
         }
 
-        return Storage::disk('public')->url($this->preview_image_path);
+        // Hostinger serves from public_html/, so /storage/* may 404 even when
+        // the file exists under laravel-kerjasama/storage/app/public.
+        // Stream previews through a dedicated public route instead.
+        return route('documents.preview', $this);
+    }
+
+    /**
+     * Storage-relative preview path on the public disk (e.g. previews/uuid.png).
+     */
+    public function normalizedPreviewPath(): ?string
+    {
+        $path = $this->preview_image_path;
+        if (! is_string($path) || trim($path) === '') {
+            return null;
+        }
+
+        $path = str_replace('\\', '/', trim($path));
+        $path = ltrim($path, '/');
+
+        foreach ([
+            'storage/app/public/',
+            'app/public/',
+            'public/',
+            'storage/',
+        ] as $prefix) {
+            if (str_starts_with($path, $prefix)) {
+                $path = substr($path, strlen($prefix));
+            }
+        }
+
+        $path = ltrim($path, '/');
+        $previewDir = trim((string) config('documents.preview_directory', 'previews'), '/');
+
+        if (! str_starts_with($path, $previewDir.'/') || str_contains($path, '..')) {
+            return null;
+        }
+
+        return $path;
     }
 
     public function formattedSize(): string
