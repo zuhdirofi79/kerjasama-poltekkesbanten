@@ -84,7 +84,7 @@ class DocumentFolderDropdownScopingTest extends TestCase
         $response->assertOk();
         $response->assertDontSee('(YF#');
         $response->assertSee('Pendidikan dan pembelajaran');
-        $response->assertSee('— Kurikulum');
+        $response->assertSee('└─ Kurikulum');
         $response->assertDontSee('value="'.$this->folderB->id.'"', false);
     }
 

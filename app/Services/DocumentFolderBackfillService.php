@@ -6,6 +6,7 @@ use App\Models\Document;
 use App\Models\DocumentFolder;
 use App\Models\InstitutionFolder;
 use App\Models\YearFolder;
+use App\Support\CooperationFolderTaxonomy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -42,9 +43,9 @@ class DocumentFolderBackfillService
             if ($dryRun) {
                 $existingRoots = DocumentFolder::query()
                     ->where('year_folder_id', $year->id)
-                    ->whereNull('parent_id')
+                    ->canonicalRoots()
                     ->count();
-                $expected = count(config('cooperation.default_year_folders', []));
+                $expected = CooperationFolderTaxonomy::expectedRootCount();
                 $stats['defaults_created'] += max(0, $expected - $existingRoots);
             } else {
                 $result = $this->defaultYearFolderProvisioner->provision($year);

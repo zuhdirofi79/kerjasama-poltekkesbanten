@@ -42,13 +42,21 @@ class DocumentFolderOptions
             }
 
             $key = $parentId ?? 0;
-            foreach ($byParent->get($key, collect()) as $folder) {
+            $siblings = $byParent->get($key, collect())->values();
+            $lastIndex = $siblings->count() - 1;
+
+            foreach ($siblings as $index => $folder) {
                 if (isset($visited[$folder->id])) {
                     continue;
                 }
                 $visited[$folder->id] = true;
 
-                $prefix = $depth > 0 ? str_repeat('— ', $depth) : '';
+                $prefix = '';
+                if ($depth > 0) {
+                    $branch = $index === $lastIndex ? '└─ ' : '├─ ';
+                    $prefix = str_repeat('    ', $depth).$branch;
+                }
+
                 $options[] = [
                     'id' => $folder->id,
                     'label' => $prefix.$folder->name,

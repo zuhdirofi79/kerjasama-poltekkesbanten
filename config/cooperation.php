@@ -4,33 +4,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default root folders provisioned under every YearFolder
+    | Canonical repository tree
     |--------------------------------------------------------------------------
     |
-    | These are templates only. After creation they become independent
-    | DocumentFolder rows that admins may rename, reorder, nest, or delete.
+    | Four structural roots live under every YearFolder. Child folders must
+    | nest under those roots (parent_id), never as siblings on the year page.
+    | Source of truth: App\Support\CooperationFolderTaxonomy.
     |
-    */
-    'default_year_folders' => [
-        'Pendidikan dan pembelajaran',
-        'Penelitian',
-        'Pengabdian kepada masyarakat',
-        'Praktik klinik atau magang',
-        'Pengembangan kompetensi SDM',
-        'Pelatihan dan sertifikasi',
-        'Rekrutmen dan penempatan lulusan',
-        'Tracer study dan pengembangan alumni',
-        'Pertukaran dosen atau mahasiswa',
-        'Seminar dan kegiatan ilmiah',
-        'Kelas internasional',
-        'Pemanfaatan sarana dan prasarana',
-        'Teknologi dan inovasi',
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Maximum DocumentFolder nesting depth (root = depth 1)
-    |--------------------------------------------------------------------------
     */
     'max_folder_depth' => 10,
 

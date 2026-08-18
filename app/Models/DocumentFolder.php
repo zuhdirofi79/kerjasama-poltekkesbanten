@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\CooperationFolderTaxonomy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -94,9 +95,27 @@ class DocumentFolder extends Model
         return $query->whereNull('parent_id');
     }
 
+    public function scopeCanonicalRoots(Builder $query): Builder
+    {
+        $names = array_values(array_unique([
+            ...CooperationFolderTaxonomy::rootNames(),
+            ...CooperationFolderTaxonomy::rootAliases(),
+        ]));
+        $slugs = CooperationFolderTaxonomy::rootSlugs();
+
+        return $query->root()->where(function (Builder $inner) use ($names, $slugs): void {
+            $inner->whereIn('name', $names)->orWhereIn('slug', $slugs);
+        });
+    }
+
     public function scopeOrdered(Builder $query): Builder
     {
         return $query->orderBy('sort_order')->orderBy('name');
+    }
+
+    public function isStructuralRoot(): bool
+    {
+        return CooperationFolderTaxonomy::isCanonicalRoot($this);
     }
 
     /**

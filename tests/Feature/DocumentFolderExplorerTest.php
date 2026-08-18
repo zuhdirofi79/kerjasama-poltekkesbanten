@@ -11,6 +11,7 @@ use App\Models\DocumentFolder;
 use App\Models\User;
 use App\Models\YearFolder;
 use App\Services\DocumentFolderService;
+use App\Support\CooperationFolderTaxonomy;
 use Database\Seeders\CooperationSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use InvalidArgumentException;
@@ -78,13 +79,22 @@ class DocumentFolderExplorerTest extends TestCase
         $first = $service->provisionDefaultFolders($year);
         $second = $service->provisionDefaultFolders($year);
 
-        $expected = count(config('cooperation.default_year_folders'));
-        $this->assertSame($expected, $first['created']);
+        $expectedFolders = CooperationFolderTaxonomy::expectedFolderCount();
+        $expectedRoots = CooperationFolderTaxonomy::expectedRootCount();
+
+        $this->assertSame($expectedFolders, $first['created']);
         $this->assertSame(0, $second['created']);
-        $this->assertSame($expected, DocumentFolder::query()->where('year_folder_id', $year->id)->whereNull('parent_id')->count());
-        $this->assertTrue(DocumentFolder::query()->where('name', 'Penelitian')->exists());
-        $this->assertTrue(DocumentFolder::query()->where('name', 'Pengabdian kepada masyarakat')->exists());
-        $this->assertTrue(DocumentFolder::query()->where('name', 'Praktik klinik atau magang')->exists());
+        $this->assertSame($expectedFolders, $second['skipped']);
+        $this->assertSame(
+            $expectedRoots,
+            DocumentFolder::query()->where('year_folder_id', $year->id)->whereNull('parent_id')->count()
+        );
+        $this->assertTrue(DocumentFolder::query()->where('name', 'Pendidikan')->whereNull('parent_id')->exists());
+        $this->assertTrue(DocumentFolder::query()->where('name', 'Penelitian')->whereNull('parent_id')->exists());
+        $this->assertTrue(DocumentFolder::query()->where('name', 'Pengabdian')->whereNull('parent_id')->exists());
+        $this->assertTrue(DocumentFolder::query()->where('name', 'Pengembangan SDM')->whereNull('parent_id')->exists());
+        $this->assertTrue(DocumentFolder::query()->where('name', 'Praktik Klinik atau Magang')->whereNotNull('parent_id')->exists());
+        $this->assertFalse(DocumentFolder::query()->where('name', 'Pengabdian kepada masyarakat')->exists());
     }
 
     public function test_year_page_renders_folders_from_database(): void
@@ -95,9 +105,16 @@ class DocumentFolderExplorerTest extends TestCase
         $response = $this->get(route('cooperation.year', [$section, $category, $year->slug]));
 
         $response->assertOk();
-        $response->assertSee('Penelitian');
-        $response->assertSee('Teknologi dan inovasi');
-        $response->assertDontSee('Belum ada dokumen pada tingkat tahun ini.');
+        $this->assertPublicFolderCards($response, [
+            'Pendidikan',
+            'Penelitian',
+            'Pengabdian',
+            'Pengembangan SDM',
+        ], [
+            'Teknologi dan Inovasi',
+            'Pemanfaatan sarana dan prasarana',
+            'Praktik Klinik atau Magang',
+        ]);
     }
 
     public function test_public_folder_page_shows_children_and_documents(): void
@@ -140,11 +157,11 @@ class DocumentFolderExplorerTest extends TestCase
         $this->actingAs($admin)
             ->post(route('admin.folders.store'), [
                 'year_folder_id' => $year->id,
-                'name' => 'Penelitian',
+                'name' => 'Arsip Kontrak',
             ])
             ->assertRedirect();
 
-        $folder = DocumentFolder::query()->where('name', 'Penelitian')->firstOrFail();
+        $folder = DocumentFolder::query()->where('name', 'Arsip Kontrak')->firstOrFail();
 
         $this->actingAs($admin)
             ->put(route('admin.folders.update', $folder), [
@@ -230,5 +247,27 @@ class DocumentFolderExplorerTest extends TestCase
             ->assertRedirect();
 
         $this->assertSame('Riset Bersama RS', $folder->fresh()->name);
+        $this->assertSame('penelitian', $folder->fresh()->slug);
+    }
+
+    public function test_canonical_root_cannot_be_moved_or_deleted(): void
+    {
+        ['year' => $year] = $this->hierarchy();
+        app(DocumentFolderService::class)->provisionDefaultFolders($year);
+        $root = DocumentFolder::query()->where('name', 'Pendidikan')->whereNull('parent_id')->firstOrFail();
+        $other = app(DocumentFolderService::class)->createFolder($year, 'Arsip Lain');
+        $admin = $this->staff();
+
+        $this->actingAs($admin)
+            ->post(route('admin.folders.move', $root), ['parent_id' => $other->id])
+            ->assertSessionHasErrors('parent_id');
+
+        $this->assertNull($root->fresh()->parent_id);
+
+        $this->actingAs($admin)
+            ->delete(route('admin.folders.destroy', $root))
+            ->assertSessionHasErrors('delete');
+
+        $this->assertNotSoftDeleted($root);
     }
 }

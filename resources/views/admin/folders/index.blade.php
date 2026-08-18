@@ -89,6 +89,9 @@
                     <a href="{{ route('admin.folders.index', ['year_folder_id' => $yearFolder->id, 'folder' => $folder->uuid]) }}" class="font-semibold text-teal-900 hover:underline">
                         📁 {{ $folder->name }}
                     </a>
+                    @if($folder->isStructuralRoot())
+                        <span class="ml-2 rounded bg-teal-50 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-teal-800">Struktural</span>
+                    @endif
                     @if($folder->description)
                         <p class="mt-0.5 text-xs text-slate-500">{{ $folder->description }}</p>
                     @endif
@@ -109,25 +112,30 @@
                                 <button class="text-xs font-semibold text-teal-700 hover:underline">Simpan</button>
                             </form>
 
+                            @unless($folder->isStructuralRoot())
                             <form method="POST" action="{{ route('admin.folders.move', $folder) }}" class="space-y-2 border-t pt-2">
                                 @csrf
                                 <label class="block text-xs font-medium">Pindahkan ke</label>
                                 <select name="parent_id" class="w-full rounded border-teal-200 text-xs">
                                     <option value="">— Root tahun —</option>
-                                    @foreach($moveTargets as $target)
-                                        @if($target->id !== $folder->id)
-                                            <option value="{{ $target->id }}">{{ $target->name }}</option>
+                                    @foreach($moveTargetOptions as $target)
+                                        @if($target['id'] !== $folder->id)
+                                            <option value="{{ $target['id'] }}">{{ $target['label'] }}</option>
                                         @endif
                                     @endforeach
                                 </select>
                                 <button class="text-xs font-semibold text-teal-700 hover:underline">Pindahkan</button>
                             </form>
+                            @else
+                            <p class="border-t pt-2 text-xs text-slate-500">Folder struktural tidak dapat dipindahkan atau dihapus.</p>
+                            @endunless
 
                             <div class="flex gap-3 border-t pt-2">
                                 <form method="POST" action="{{ route('admin.folders.reorder', $folder) }}">@csrf<input type="hidden" name="direction" value="up"><button class="text-xs hover:underline">Naik</button></form>
                                 <form method="POST" action="{{ route('admin.folders.reorder', $folder) }}">@csrf<input type="hidden" name="direction" value="down"><button class="text-xs hover:underline">Turun</button></form>
                             </div>
 
+                            @unless($folder->isStructuralRoot())
                             <form method="POST" action="{{ route('admin.folders.destroy', $folder) }}" class="border-t pt-2" onsubmit="return confirm('Arsipkan folder ini?')">
                                 @csrf @method('DELETE')
                                 @if($folder->children_count > 0 || $folder->documents_count > 0)
@@ -138,6 +146,7 @@
                                 @endif
                                 <button class="text-xs font-semibold text-red-600 hover:underline">Hapus</button>
                             </form>
+                            @endunless
                         </div>
                     </details>
                 </td>
@@ -166,8 +175,8 @@
                                 <label class="block text-xs font-medium">Pindahkan ke folder</label>
                                 <select name="document_folder_id" class="w-full rounded border-teal-200 text-xs">
                                     <option value="">— Root tahun —</option>
-                                    @foreach($moveTargets as $target)
-                                        <option value="{{ $target->id }}" @selected($document->document_folder_id == $target->id)>{{ $target->name }}</option>
+                                    @foreach($moveTargetOptions as $target)
+                                        <option value="{{ $target['id'] }}" @selected($document->document_folder_id == $target['id'])>{{ $target['label'] }}</option>
                                     @endforeach
                                 </select>
                                 <button class="text-xs font-semibold text-teal-700 hover:underline">Pindahkan</button>

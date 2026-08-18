@@ -56,7 +56,7 @@ class CooperationController extends Controller
 
         $folders = DocumentFolder::query()
             ->where('year_folder_id', $yearFolder->id)
-            ->root()
+            ->canonicalRoots()
             ->active()
             ->ordered()
             ->withCount([

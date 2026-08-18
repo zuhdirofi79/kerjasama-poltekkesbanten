@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Document;
 use App\Models\DocumentFolder;
 use App\Models\YearFolder;
+use App\Support\CooperationFolderTaxonomy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -83,10 +84,13 @@ class DocumentFolderService
         $this->assertUniqueName($folder->year_folder_id, $folder->parent_id, $name, $folder->id);
 
         $old = $folder->only(['name', 'description', 'slug']);
+        $structural = CooperationFolderTaxonomy::isCanonicalRoot($folder);
 
         $folder->update([
             'name' => $name,
-            'slug' => $this->uniqueSlug($folder->year_folder_id, $folder->parent_id, Str::slug($name) ?: 'folder', $folder->id),
+            'slug' => $structural
+                ? $folder->slug
+                : $this->uniqueSlug($folder->year_folder_id, $folder->parent_id, Str::slug($name) ?: 'folder', $folder->id),
             'description' => $description ?? $folder->description,
             'updated_by' => $actorId,
         ]);
@@ -137,6 +141,10 @@ class DocumentFolderService
 
     public function validateMove(DocumentFolder $folder, ?DocumentFolder $destinationParent): void
     {
+        if (CooperationFolderTaxonomy::isCanonicalRoot($folder) && $destinationParent !== null) {
+            throw new InvalidArgumentException('Folder struktural tidak dapat dipindahkan ke bawah folder lain.');
+        }
+
         if ($destinationParent) {
             if ($destinationParent->id === $folder->id) {
                 throw new InvalidArgumentException('Folder tidak dapat dipindahkan ke dirinya sendiri.');
@@ -160,6 +168,10 @@ class DocumentFolderService
 
     public function deleteFolder(DocumentFolder $folder, bool $confirmNonEmpty = false, ?int $actorId = null): void
     {
+        if (CooperationFolderTaxonomy::isCanonicalRoot($folder)) {
+            throw new InvalidArgumentException('Folder struktural tidak dapat dihapus.');
+        }
+
         $childCount = $folder->children()->count();
         $documentCount = $folder->documents()->count();
 

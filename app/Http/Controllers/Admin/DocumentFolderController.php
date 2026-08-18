@@ -89,12 +89,9 @@ class DocumentFolderController extends Controller
             ? $currentFolder->loadMissing('parent.parent.parent.parent.parent')->ancestorChain()
             : [];
 
-        $moveTargets = $yearFolder
-            ? DocumentFolder::query()
-                ->where('year_folder_id', $yearFolder->id)
-                ->ordered()
-                ->get()
-            : collect();
+        $moveTargetOptions = $yearFolder
+            ? DocumentFolderOptions::forYear($yearFolder)
+            : [];
 
         return view('admin.folders.index', compact(
             'yearFolders',
@@ -103,7 +100,7 @@ class DocumentFolderController extends Controller
             'folders',
             'documents',
             'ancestors',
-            'moveTargets',
+            'moveTargetOptions',
             'search',
         ));
     }
