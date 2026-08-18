@@ -1,0 +1,45 @@
+buatkan filter sortir pencarian dokumen setiap bidang menggunakan kata kunci=
+1 tri dharma
+- tri dharma bidang Pendidikan 
+- tri dharma bidang Penelitian
+- tri dharma bidang Pengmas (tri dharma bidang Pengabdian Masyarakat)
+
+filter pencarian berdasarkan tanggal dokumen
+
+menu khusus untuk tri dharma (nama menu nya itu rekapitulasi)
+nanti untuk menjawab pertanyaan misalnya ada berapa jumlah dokumen tri dharma bidang Pendidikan itu ada di menu rekapitulasi
+
+buatkan icon lonceng untuk notifikasi habis expired Kerjasama sejak 1 bulan sebelumnya 
+
+terus buatkan template form pengajuan Kerjasama yang bisa didownload dan form upload pengajuan Kerjasama menggunakan template tersebut
+
+terus buatkan form questionaire kepuasan Kerjasama yang bisa ditampilkan grafik evaluasi kepuasan Kerjasama 
+
+monitoring evaluasi Kerjasama
+
+di pengajuan Kerjasama ada 2 pilihan =
+1 internal = tidak perlu isi nama resmi instansi , alamat lengkap instansi atau Lembaga, nomor telepon instansi, alamat web instansi
+2 eksternal = tetep perlu isi nama resmi instansi , alamat lengkap instansi atau Lembaga, nomor telepon instansi, alamat web instansi
+
+
+Pendidikan itu sub dokumen=
+-Pemanfaatan sarana dan prasarana 
+-Kelas Internasional
+-Seminar dan Kegiatan
+-Pelatihan dan Sertifikasi
+
+Penelitian itu sub dokumen=
+- Teknologi dan Inovasi
+
+
+Pengabdian itu sub dokumen=
+-Pertukaran dosen.
+-Rekrutmen dan penempatan lulusan
+-Praktik Klinik atau Magang
+
+Pengembangan SDM
+-Tracer Study dan Pengembangan Alumni
+-Pengembangan kompetensi SDM
+
+
+Adakan menu Helpdesk silahkan hubungi ke +62 821-8402-4334

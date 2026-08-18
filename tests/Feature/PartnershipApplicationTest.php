@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\PartnershipApplicationStatus;
+use App\Http\Controllers\PartnershipApplicationController;
 use App\Mail\NewPartnershipApplicationMail;
 use App\Mail\PartnershipApplicationConfirmationMail;
 use App\Models\PartnershipApplication;
@@ -46,7 +47,7 @@ class PartnershipApplicationTest extends TestCase
 
         $this->assertNotNull($route);
         $this->assertSame(
-            \App\Http\Controllers\PartnershipApplicationController::class.'@create',
+            PartnershipApplicationController::class.'@create',
             $route->getAction('controller')
         );
     }
@@ -252,6 +253,7 @@ class PartnershipApplicationTest extends TestCase
     private function validPayload(array $overrides = []): array
     {
         return array_merge([
+            'applicant_type' => 'external',
             'institution_email' => 'mitra@example.com',
             'institution_name' => 'RS Contoh Sehat',
             'institution_address' => 'Jl. Contoh No. 1, Serang',

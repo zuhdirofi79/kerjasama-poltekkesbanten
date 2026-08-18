@@ -39,6 +39,16 @@ class StorePartnershipApplicationRequest extends FormRequest
         if ($this->input('partner_status') === 'dalam_negeri' && blank($this->input('country'))) {
             $this->merge(['country' => 'Indonesia']);
         }
+
+        if ($this->input('applicant_type') === 'internal') {
+            $canonical = config('partnership_applications.internal_institution', []);
+            $this->merge([
+                'institution_name' => $canonical['name'] ?? 'Poltekkes Kemenkes Banten',
+                'institution_address' => $canonical['address'] ?? '',
+                'institution_phone' => $canonical['phone'] ?? '',
+                'institution_website' => $canonical['website'] ?? null,
+            ]);
+        }
     }
 
     public function rules(): array
@@ -62,6 +72,8 @@ class StorePartnershipApplicationRequest extends FormRequest
 
         return [
             'company_fax' => ['nullable', 'max:0'],
+
+            'applicant_type' => ['required', Rule::in(['internal', 'external'])],
 
             'institution_email' => ['required', 'email:rfc', 'max:255'],
             'institution_name' => ['required', 'string', 'max:255'],
@@ -109,6 +121,7 @@ class StorePartnershipApplicationRequest extends FormRequest
             'funding_sources.*' => [Rule::in($fundingSources)],
 
             'official_request_letter' => ['required', 'file', "max:{$maxKb}", "mimes:{$officialExt}"],
+            'filled_template' => ['nullable', 'file', "max:{$maxKb}", 'mimes:pdf,doc,docx'],
             'institution_profile_file' => ['nullable', 'file', "max:{$maxKb}", "mimes:{$profileExt}"],
             'supporting_document' => ['nullable', 'file', "max:{$maxKb}", "mimes:{$supportExt}"],
 
@@ -156,6 +169,7 @@ class StorePartnershipApplicationRequest extends FormRequest
         $maxMb = (int) config('partnership_applications.max_upload_mb', 10);
 
         return [
+            'applicant_type.required' => 'Jenis pengajuan Internal atau Eksternal wajib dipilih.',
             'institution_email.required' => 'Alamat email resmi instansi wajib diisi.',
             'institution_email.email' => 'Format alamat email tidak valid.',
             'institution_name.required' => 'Nama resmi instansi atau lembaga wajib diisi.',
@@ -197,6 +211,8 @@ class StorePartnershipApplicationRequest extends FormRequest
             'official_request_letter.required' => 'Surat resmi pengajuan kerja sama wajib diunggah.',
             'official_request_letter.max' => "Ukuran surat pengajuan maksimal {$maxMb} MB.",
             'official_request_letter.mimes' => 'Format file surat pengajuan tidak didukung.',
+            'filled_template.max' => "Ukuran form template maksimal {$maxMb} MB.",
+            'filled_template.mimes' => 'Format form template harus PDF, DOC, atau DOCX.',
             'institution_profile_file.max' => "Ukuran profil instansi maksimal {$maxMb} MB.",
             'institution_profile_file.mimes' => 'Format file profil instansi tidak didukung.',
             'supporting_document.max' => "Ukuran dokumen pendukung maksimal {$maxMb} MB.",
@@ -229,6 +245,7 @@ class StorePartnershipApplicationRequest extends FormRequest
         unset(
             $validated['company_fax'],
             $validated['official_request_letter'],
+            $validated['filled_template'],
             $validated['institution_profile_file'],
             $validated['supporting_document'],
             $validated['declaration_data_accurate'],
@@ -243,6 +260,7 @@ class StorePartnershipApplicationRequest extends FormRequest
     {
         return array_filter([
             'official_request_letter' => $this->file('official_request_letter'),
+            'filled_template' => $this->file('filled_template'),
             'institution_profile' => $this->file('institution_profile_file'),
             'supporting_document' => $this->file('supporting_document'),
         ]);

@@ -75,6 +75,7 @@
         <p class="mt-1 text-xs text-slate-500">Hanya thumbnail yang dipublikasikan. File asli tidak pernah di-link ke /storage.</p>
     </div>
     <label class="inline-flex items-center gap-2 text-sm"><input type="checkbox" name="is_active" value="1" checked> Aktif / publish</label>
+    @include('admin.documents.partials.metadata-fields', ['document' => null, 'areas' => $areas, 'subtypes' => $subtypes])
     <button class="btn-teal">Unggah</button>
 </form>
 @endsection

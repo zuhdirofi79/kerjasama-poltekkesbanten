@@ -27,6 +27,7 @@
     today: @js($today),
     prefillName: @js($prefill['name'] ?? ''),
     maxUploadMb: {{ (int) $maxUploadMb }},
+    internalInstitution: @js($internalInstitution),
     labels: {
         proposal_types: @js($options['proposal_types']),
         institution_types: @js($options['institution_types']),
@@ -34,6 +35,7 @@
         document_forms: @js($options['document_forms']),
     },
     old: {
+        applicant_type: @js(old('applicant_type')),
         institution_type: @js(old('institution_type')),
         partner_status: @js(old('partner_status', 'dalam_negeri')),
         country: @js(old('country', 'Indonesia')),
@@ -45,6 +47,9 @@
         requires_funding: @js(old('requires_funding')),
         funding_sources: @js($oldFunding),
         institution_name: @js(old('institution_name')),
+        institution_address: @js(old('institution_address')),
+        institution_phone: @js(old('institution_phone')),
+        institution_website: @js(old('institution_website')),
         institution_email: @js(old('institution_email', $prefill['email'] ?? '')),
         contact_person_name: @js(old('contact_person_name', $prefill['name'] ?? '')),
         contact_person_email: @js(old('contact_person_email', $prefill['email'] ?? '')),
@@ -63,6 +68,11 @@
                 Lengkapi informasi berikut untuk mengajukan usulan kerja sama.
                 Data akan digunakan untuk proses telaah dan koordinasi oleh Unit Kerja Sama.
             </p>
+            <div class="mt-4">
+                <a href="{{ route('partnership-applications.template') }}" class="partnership-btn partnership-btn--secondary">
+                    Unduh Template Pengajuan Kerjasama
+                </a>
+            </div>
         </header>
 
         @if ($errors->any())
@@ -85,6 +95,21 @@
                 Formulir ini digunakan oleh calon mitra untuk mengajukan kerja sama dengan Politeknik Kesehatan Kementerian Kesehatan Banten.
                 Informasi yang disampaikan akan digunakan sebagai bahan telaah, koordinasi, dan penyusunan dokumen kerja sama.
             </p>
+            <p class="partnership-section-desc" style="margin-top:1rem;font-weight:700;color:var(--brand-teal-deep);">Jenis Pengajuan</p>
+            <fieldset class="fieldset-reset form-field">
+                <legend class="form-label">Pilih jenis pengajuan <span class="form-required">*</span></legend>
+                <div class="choice-grid" style="grid-template-columns:1fr 1fr;">
+                    <label class="choice-card">
+                        <input type="radio" x-model="form.applicant_type" value="internal" @change="applyApplicantType()">
+                        <span class="choice-card__body"><span class="choice-card__title">Internal</span><span class="choice-card__hint">Data instansi Poltekkes terisi otomatis</span></span>
+                    </label>
+                    <label class="choice-card">
+                        <input type="radio" x-model="form.applicant_type" value="external" @change="applyApplicantType()">
+                        <span class="choice-card__body"><span class="choice-card__title">Eksternal</span><span class="choice-card__hint">Isi identitas instansi mitra</span></span>
+                    </label>
+                </div>
+                <p class="form-error" x-show="applicantTypeError" x-cloak>Pilih Internal atau Eksternal sebelum memulai.</p>
+            </fieldset>
             <p class="partnership-section-desc" style="margin-top:1rem;font-weight:700;color:var(--brand-teal-deep);">Sebelum memulai, siapkan:</p>
             <ul class="partnership-checklist">
                 <li>Identitas resmi instansi atau lembaga</li>
@@ -96,7 +121,7 @@
             <div class="partnership-actions" style="border-top:0;padding-top:0;margin-top:1.75rem;">
                 <span></span>
                 <div class="partnership-actions__right">
-                    <button type="button" class="partnership-btn partnership-btn--primary" @click="goTo(1)">
+                    <button type="button" class="partnership-btn partnership-btn--primary" @click="start()">
                         Mulai Pengajuan
                         <span aria-hidden="true">→</span>
                     </button>
@@ -114,6 +139,7 @@
             novalidate
         >
             @csrf
+            <input type="hidden" name="applicant_type" :value="form.applicant_type">
 
             <div class="partnership-honeypot" aria-hidden="true">
                 <label for="company_fax">Fax</label>
@@ -170,23 +196,23 @@
                         </div>
                         <div class="form-field">
                             <label class="form-label" for="institution_name">Nama resmi instansi atau lembaga <span class="form-required">*</span></label>
-                            <input class="form-control @error('institution_name') is-invalid @enderror" type="text" name="institution_name" id="institution_name" x-model="form.institution_name" maxlength="255" required>
+                            <input class="form-control @error('institution_name') is-invalid @enderror" type="text" name="institution_name" id="institution_name" x-model="form.institution_name" maxlength="255" required :readonly="isInternal()">
                             @error('institution_name')<p class="form-error">{{ $message }}</p>@enderror
                         </div>
                         <div class="form-field">
                             <label class="form-label" for="institution_address">Alamat lengkap instansi atau lembaga <span class="form-required">*</span></label>
-                            <textarea class="form-textarea @error('institution_address') is-invalid @enderror" name="institution_address" id="institution_address" maxlength="2000" required>{{ old('institution_address') }}</textarea>
+                            <textarea class="form-textarea @error('institution_address') is-invalid @enderror" name="institution_address" id="institution_address" x-model="form.institution_address" maxlength="2000" required :readonly="isInternal()"></textarea>
                             @error('institution_address')<p class="form-error">{{ $message }}</p>@enderror
                         </div>
                         <div class="form-grid-2">
                             <div class="form-field">
                                 <label class="form-label" for="institution_phone">Nomor telepon instansi <span class="form-required">*</span></label>
-                                <input class="form-control @error('institution_phone') is-invalid @enderror" type="text" name="institution_phone" id="institution_phone" value="{{ old('institution_phone') }}" maxlength="64" required placeholder="+62 ...">
+                                <input class="form-control @error('institution_phone') is-invalid @enderror" type="text" name="institution_phone" id="institution_phone" x-model="form.institution_phone" maxlength="64" required placeholder="+62 ..." :readonly="isInternal()">
                                 @error('institution_phone')<p class="form-error">{{ $message }}</p>@enderror
                             </div>
                             <div class="form-field">
                                 <label class="form-label" for="institution_website">Situs web instansi <span class="form-optional">Opsional</span></label>
-                                <input class="form-control @error('institution_website') is-invalid @enderror" type="url" name="institution_website" id="institution_website" value="{{ old('institution_website') }}" maxlength="255" placeholder="https://">
+                                <input class="form-control @error('institution_website') is-invalid @enderror" type="url" name="institution_website" id="institution_website" x-model="form.institution_website" maxlength="255" placeholder="https://" :readonly="isInternal()">
                                 @error('institution_website')<p class="form-error">{{ $message }}</p>@enderror
                             </div>
                         </div>
@@ -493,6 +519,36 @@
                         </div>
 
                         <div class="form-field">
+                            <label class="form-label">Unggah Form Pengajuan Kerjasama <span class="form-optional">Opsional</span></label>
+                            <p class="partnership-section-desc" style="margin-top:0;">Unduh template resmi, isi, lalu unggah kembali (PDF/DOC/DOCX, maks. {{ $maxUploadMb }} MB).</p>
+                            <div class="upload-zone" :class="{ 'is-filled': files.filled_template, 'is-dragover': drag.filled_template }" @dragover.prevent="drag.filled_template = true" @dragleave.prevent="drag.filled_template = false" @drop.prevent="onDrop($event, 'filled_template')">
+                                <input class="upload-zone__input" type="file" name="filled_template" id="filled_template" accept=".pdf,.doc,.docx" @change="onFileChange($event, 'filled_template')">
+                                <template x-if="!files.filled_template">
+                                    <div>
+                                        <div class="upload-zone__icon" aria-hidden="true">
+                                            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                        </div>
+                                        <p class="upload-zone__title">Klik untuk memilih form template</p>
+                                        <p class="upload-zone__hint">PDF, DOC, DOCX • Maks. {{ $maxUploadMb }} MB</p>
+                                    </div>
+                                </template>
+                                <template x-if="files.filled_template">
+                                    <div class="upload-selected" @click.stop>
+                                        <div class="upload-selected__icon" aria-hidden="true">
+                                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        </div>
+                                        <div class="upload-selected__meta">
+                                            <p class="upload-selected__name" x-text="files.filled_template.name"></p>
+                                            <p class="upload-selected__size" x-text="formatSize(files.filled_template.size)"></p>
+                                        </div>
+                                        <button type="button" class="upload-selected__clear" @click.prevent="clearFile('filled_template')">Hapus</button>
+                                    </div>
+                                </template>
+                            </div>
+                            @error('filled_template')<p class="form-error">{{ $message }}</p>@enderror
+                        </div>
+
+                        <div class="form-field">
                             <label class="form-label">Unggah profil instansi atau lembaga <span class="form-optional">Opsional</span></label>
                             <div class="upload-zone" :class="{ 'is-filled': files.institution_profile_file, 'is-dragover': drag.institution_profile_file }" @dragover.prevent="drag.institution_profile_file = true" @dragleave.prevent="drag.institution_profile_file = false" @drop.prevent="onDrop($event, 'institution_profile_file')">
                                 <input class="upload-zone__input" type="file" name="institution_profile_file" id="institution_profile_file" accept=".pdf,.doc,.docx,.ppt,.pptx" @change="onFileChange($event, 'institution_profile_file')">
@@ -606,6 +662,7 @@
                                 <p class="partnership-summary__title">Identitas Mitra</p>
                                 <button type="button" class="partnership-summary__edit" @click="goTo(1)">Edit</button>
                             </div>
+                            <div class="partnership-summary__row"><span>Jenis</span><strong x-text="form.applicant_type === 'internal' ? 'Internal' : (form.applicant_type === 'external' ? 'Eksternal' : '—')"></strong></div>
                             <div class="partnership-summary__row"><span>Instansi</span><strong x-text="form.institution_name || '—'"></strong></div>
                             <div class="partnership-summary__row"><span>Email</span><strong x-text="form.institution_email || '—'"></strong></div>
                             <div class="partnership-summary__row"><span>Jenis</span><strong x-text="labelOf('institution_types', form.institution_type)"></strong></div>
@@ -668,6 +725,8 @@ function partnershipWizard(config) {
     return {
         step: config.initialStep,
         submitting: false,
+        applicantTypeError: false,
+        internalInstitution: config.internalInstitution || {},
         stepTitles: {
             1: 'Identitas Calon Mitra',
             2: 'Penanggung Jawab dan Narahubung',
@@ -688,6 +747,7 @@ function partnershipWizard(config) {
         ],
         labels: config.labels || {},
         form: {
+            applicant_type: config.old.applicant_type || '',
             institution_type: config.old.institution_type || '',
             partner_status: config.old.partner_status || 'dalam_negeri',
             country: config.old.country || 'Indonesia',
@@ -699,6 +759,9 @@ function partnershipWizard(config) {
             requires_funding: config.old.requires_funding || '',
             funding_sources: Array.isArray(config.old.funding_sources) ? config.old.funding_sources : [],
             institution_name: config.old.institution_name || '',
+            institution_address: config.old.institution_address || '',
+            institution_phone: config.old.institution_phone || '',
+            institution_website: config.old.institution_website || '',
             institution_email: config.old.institution_email || '',
             contact_person_name: config.old.contact_person_name || config.prefillName || '',
             contact_person_email: config.old.contact_person_email || '',
@@ -708,11 +771,13 @@ function partnershipWizard(config) {
         },
         files: {
             official_request_letter: null,
+            filled_template: null,
             institution_profile_file: null,
             supporting_document: null,
         },
         drag: {
             official_request_letter: false,
+            filled_template: false,
             institution_profile_file: false,
             supporting_document: false,
         },
@@ -722,6 +787,31 @@ function partnershipWizard(config) {
                     this.form.country = 'Indonesia';
                 }
             });
+            if (this.form.applicant_type === 'internal') {
+                this.applyApplicantType();
+            }
+        },
+        isInternal() {
+            return this.form.applicant_type === 'internal';
+        },
+        applyApplicantType() {
+            this.applicantTypeError = false;
+            if (!this.isInternal()) {
+                return;
+            }
+            const c = this.internalInstitution || {};
+            this.form.institution_name = c.name || 'Poltekkes Kemenkes Banten';
+            this.form.institution_address = c.address || '';
+            this.form.institution_phone = c.phone || '';
+            this.form.institution_website = c.website || '';
+        },
+        start() {
+            if (!this.form.applicant_type) {
+                this.applicantTypeError = true;
+                return;
+            }
+            this.applyApplicantType();
+            this.goTo(1);
         },
         labelOf(group, key) {
             return (this.labels[group] && this.labels[group][key]) || '—';

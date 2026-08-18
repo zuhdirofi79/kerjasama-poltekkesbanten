@@ -42,11 +42,34 @@
 
     @if($documents->isNotEmpty())
         <h2 class="content-section__title mt-10">Dokumen</h2>
+        <x-document-filter-bar
+            class="mt-4"
+            :action="route('cooperation.year', [$section, $category, $yearFolder->slug])"
+            :filters="$filters"
+            :areas="$areas"
+            :subtypes="$subtypes"
+            :sorts="$sorts"
+        />
         <div class="document-grid mt-4">
             @foreach($documents as $document)
                 <x-document-card :document="$document" :status-label="$statusLabels[$document->id] ?? 'Minta Akses'" />
             @endforeach
         </div>
+        <div class="mt-6">{{ $documents->links() }}</div>
+    @else
+        <h2 class="content-section__title mt-10">Dokumen</h2>
+        <x-document-filter-bar
+            class="mt-4"
+            :action="route('cooperation.year', [$section, $category, $yearFolder->slug])"
+            :filters="$filters"
+            :areas="$areas"
+            :subtypes="$subtypes"
+            :sorts="$sorts"
+        />
+        @if($filtering)
+            <p class="mt-4 text-sm" style="color: var(--brand-muted);">Tidak ada dokumen yang sesuai dengan filter.</p>
+            <a href="{{ route('cooperation.year', [$section, $category, $yearFolder->slug]) }}" class="btn-outline mt-3 inline-flex !px-3 !py-2 !text-xs">Reset Filter</a>
+        @endif
     @endif
 </div>
 @endsection

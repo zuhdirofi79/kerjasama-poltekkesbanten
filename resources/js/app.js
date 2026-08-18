@@ -55,4 +55,46 @@ window.documentUploadForm = function documentUploadForm({
     };
 };
 
+window.documentMetadataForm = function documentMetadataForm({
+    area = '',
+    subtype = '',
+    subtypesMap = {},
+} = {}) {
+    return {
+        area: area || '',
+        subtype: subtype || '',
+        subtypesMap,
+        subtypes() {
+            return this.subtypesMap[this.area] || {};
+        },
+        onAreaChange() {
+            const options = this.subtypes();
+            if (!Object.prototype.hasOwnProperty.call(options, this.subtype)) {
+                this.subtype = '';
+            }
+        },
+    };
+};
+
+window.documentFilterBar = function documentFilterBar({
+    area = '',
+    subtype = '',
+    subtypesMap = {},
+} = {}) {
+    return {
+        area: area || '',
+        subtype: subtype || '',
+        subtypesMap,
+        subtypes() {
+            return this.subtypesMap[this.area] || {};
+        },
+        onAreaChange() {
+            const options = this.subtypes();
+            if (!Object.prototype.hasOwnProperty.call(options, this.subtype)) {
+                this.subtype = '';
+            }
+        },
+    };
+};
+
 Alpine.start();

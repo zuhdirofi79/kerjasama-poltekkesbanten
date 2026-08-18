@@ -36,6 +36,8 @@
         </div>
         <nav class="flex-1 space-y-1 px-3 py-4">
             <a href="{{ route('admin.dashboard') }}" class="admin-nav-link {{ request()->routeIs('admin.dashboard') ? 'admin-nav-link-active' : '' }}">Dashboard</a>
+            <a href="{{ route('admin.rekapitulasi.index') }}" class="admin-nav-link {{ request()->routeIs('admin.rekapitulasi.*') ? 'admin-nav-link-active' : '' }}">Rekapitulasi</a>
+            <a href="{{ route('admin.monitoring.index') }}" class="admin-nav-link {{ request()->routeIs('admin.monitoring.*') || request()->routeIs('admin.satisfaction.*') ? 'admin-nav-link-active' : '' }}">Monitoring &amp; Evaluasi</a>
             <a href="{{ route('admin.years.index') }}" class="admin-nav-link {{ request()->routeIs('admin.years.*') ? 'admin-nav-link-active' : '' }}">Folder Tahun</a>
             <a href="{{ route('admin.folders.index') }}" class="admin-nav-link {{ request()->routeIs('admin.folders.*') ? 'admin-nav-link-active' : '' }}">Repository</a>
             <a href="{{ route('admin.documents.index') }}" class="admin-nav-link {{ request()->routeIs('admin.documents.*') ? 'admin-nav-link-active' : '' }}">Dokumen</a>
@@ -75,7 +77,46 @@
     <div class="flex min-w-0 flex-1 flex-col">
         <header class="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3 md:px-6">
             <h1 class="text-lg font-bold text-teal-950">@yield('heading', 'Admin')</h1>
-            <a href="{{ route('home') }}" class="text-sm font-medium text-teal-700 md:hidden">Publik</a>
+            <div class="flex items-center gap-3">
+                @if(auth()->user()?->canAccessAdminPanel())
+                    <div class="relative" x-data="{ open: false }">
+                        <button type="button" class="relative inline-flex h-10 w-10 items-center justify-center rounded-lg border border-teal-100 text-teal-800" @click="open = !open" aria-label="Notifikasi masa berlaku">
+                            <svg width="20" height="20" min-width="20" min-height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="width:20px;height:20px;min-width:20px;min-height:20px;">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2c0 .5-.2 1-.6 1.4L4 17h5m6 0a3 3 0 11-6 0"/>
+                            </svg>
+                            @if(($expiryNotificationCount ?? 0) > 0)
+                                <span class="absolute -right-1 -top-1 inline-flex min-h-[1.15rem] min-w-[1.15rem] items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">{{ $expiryNotificationCount }}</span>
+                            @endif
+                        </button>
+                        <div x-cloak x-show="open" @click.outside="open = false" class="absolute right-0 z-30 mt-2 w-80 overflow-hidden rounded-xl border border-teal-100 bg-white shadow-sm">
+                            <div class="border-b border-teal-100 px-4 py-2 text-sm font-semibold text-teal-950">Notifikasi Masa Berlaku</div>
+                            <div class="max-h-80 overflow-y-auto">
+                                @forelse($expiryNotifications ?? [] as $item)
+                                    @php
+                                        $days = (new \App\Services\CooperationExpiryService())->daysUntilEnd($item->cooperation_end_date);
+                                        $status = $item->expiryStatus();
+                                    @endphp
+                                    <a href="{{ route('admin.documents.edit', $item) }}" class="block border-b border-slate-100 px-4 py-3 text-sm hover:bg-teal-50">
+                                        <p class="font-semibold text-teal-950">{{ $item->title }}</p>
+                                        <p class="mt-0.5 text-xs text-slate-500">
+                                            @if($days !== null && $days >= 0)
+                                                Berakhir {{ $days }} hari lagi
+                                            @elseif($days !== null)
+                                                Sudah berakhir {{ abs($days) }} hari
+                                            @endif
+                                            · {{ $item->cooperation_end_date?->format('d M Y') }}
+                                        </p>
+                                    </a>
+                                @empty
+                                    <p class="px-4 py-4 text-sm text-slate-500">Tidak ada notifikasi.</p>
+                                @endforelse
+                            </div>
+                            <a href="{{ route('admin.expiry.index') }}" class="block px-4 py-2 text-center text-xs font-semibold text-teal-700 hover:bg-teal-50">Lihat Semua</a>
+                        </div>
+                    </div>
+                @endif
+                <a href="{{ route('home') }}" class="text-sm font-medium text-teal-700 md:hidden">Publik</a>
+            </div>
         </header>
 
         <main class="flex-1 p-4 md:p-6">
@@ -91,5 +132,6 @@
         </main>
     </div>
 </div>
+@stack('scripts')
 </body>
 </html>

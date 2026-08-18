@@ -49,14 +49,28 @@
     </div>
 
     <h2 class="content-section__title mt-10">Dokumen</h2>
+    <x-document-filter-bar
+        class="mt-4"
+        :action="route('cooperation.folder', [$section, $category, $yearFolder->slug, $folder])"
+        :filters="$filters"
+        :areas="$areas"
+        :subtypes="$subtypes"
+        :sorts="$sorts"
+    />
     <div class="document-grid mt-4">
         @forelse($documents as $document)
             <x-document-card :document="$document" :status-label="$statusLabels[$document->id] ?? 'Minta Akses'" />
         @empty
-            @if($children->isNotEmpty())
+            @if($filtering)
+                <p class="text-sm" style="color: var(--brand-muted);">Tidak ada dokumen yang sesuai dengan filter.</p>
+                <a href="{{ route('cooperation.folder', [$section, $category, $yearFolder->slug, $folder]) }}" class="btn-outline mt-3 inline-flex !px-3 !py-2 !text-xs">Reset Filter</a>
+            @elseif($children->isNotEmpty())
                 <p class="text-sm" style="color: var(--brand-muted);">Belum ada dokumen pada folder ini.</p>
             @endif
         @endforelse
     </div>
+    @if($documents->isNotEmpty())
+        <div class="mt-6">{{ $documents->links() }}</div>
+    @endif
 </div>
 @endsection

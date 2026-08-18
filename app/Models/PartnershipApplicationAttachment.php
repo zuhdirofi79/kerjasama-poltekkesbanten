@@ -43,6 +43,7 @@ class PartnershipApplicationAttachment extends Model
             'official_request_letter' => 'Surat resmi pengajuan',
             'institution_profile' => 'Profil instansi',
             'supporting_document' => 'Dokumen pendukung',
+            'filled_template' => 'Form pengajuan (template)',
             default => $this->type,
         };
     }

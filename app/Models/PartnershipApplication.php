@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ApplicantType;
 use App\Enums\PartnershipApplicationStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,7 @@ class PartnershipApplication extends Model
         'public_token',
         'submission_code',
         'status',
+        'applicant_type',
         'institution_email',
         'institution_name',
         'institution_address',
@@ -73,6 +75,7 @@ class PartnershipApplication extends Model
     {
         return [
             'status' => PartnershipApplicationStatus::class,
+            'applicant_type' => ApplicantType::class,
             'target_units' => 'array',
             'proposed_scopes' => 'array',
             'funding_sources' => 'array',

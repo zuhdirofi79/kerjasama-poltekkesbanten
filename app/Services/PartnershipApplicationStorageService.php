@@ -27,6 +27,7 @@ class PartnershipApplicationStorageService
             'official_request_letter' => 'official-request',
             'institution_profile' => 'institution-profile',
             'supporting_document' => 'supporting',
+            'filled_template' => 'filled-template',
             default => $type,
         };
 

@@ -11,7 +11,8 @@ class ContactPageTest extends TestCase
         $response = $this->get(route('pages.kontak'));
 
         $response->assertOk();
-        $response->assertSee('Unit Kerjasama');
+        $response->assertSee('Kontak / Helpdesk');
+        $response->assertSee('Silakan hubungi Unit Kerjasama Poltekkes Kemenkes Banten.');
         $response->assertSee('kerjasama@poltekkesbanten.ac.id');
         $response->assertSee('Rifaldi Tri Pamungkas');
         $response->assertSee('082184024334');

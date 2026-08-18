@@ -5,8 +5,12 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DocumentController as AdminDocumentController;
 use App\Http\Controllers\Admin\DocumentFolderController;
+use App\Http\Controllers\Admin\ExpiryNotificationController;
 use App\Http\Controllers\Admin\InstitutionFolderController;
+use App\Http\Controllers\Admin\MonitoringController;
 use App\Http\Controllers\Admin\PartnershipApplicationController as AdminPartnershipApplicationController;
+use App\Http\Controllers\Admin\RekapitulasiController;
+use App\Http\Controllers\Admin\SatisfactionQuestionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\YearFolderController;
 use App\Http\Controllers\Auth\GoogleAuthController;
@@ -17,7 +21,9 @@ use App\Http\Controllers\DocumentRequestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PartnershipApplicationController;
+use App\Http\Controllers\PartnershipApplicationTemplateController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SatisfactionSurveyController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -29,11 +35,21 @@ Route::get('/kontak', [PageController::class, 'kontak'])->name('pages.kontak');
 
 Route::get('/ajukan-kerjasama', [PartnershipApplicationController::class, 'create'])
     ->name('partnership-applications.create');
+Route::get('/ajukan-kerjasama/template', PartnershipApplicationTemplateController::class)
+    ->name('partnership-applications.template');
 Route::post('/ajukan-kerjasama', [PartnershipApplicationController::class, 'store'])
     ->middleware('throttle:'.config('partnership_applications.rate_limit_per_hour', 5).',60')
     ->name('partnership-applications.store');
 Route::get('/ajukan-kerjasama/berhasil/{application:public_token}', [PartnershipApplicationController::class, 'success'])
     ->name('partnership-applications.success');
+
+Route::get('/evaluasi/{survey:public_token}', [SatisfactionSurveyController::class, 'show'])
+    ->name('satisfaction.show');
+Route::post('/evaluasi/{survey:public_token}', [SatisfactionSurveyController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('satisfaction.store');
+Route::get('/evaluasi/{survey:public_token}/terima-kasih', [SatisfactionSurveyController::class, 'thanks'])
+    ->name('satisfaction.thanks');
 
 Route::prefix('kerjasama')->name('cooperation.')->group(function () {
     Route::get('{section:slug}', [CooperationController::class, 'section'])->name('section');
@@ -83,6 +99,15 @@ Route::prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::get('/', DashboardController::class)->name('dashboard');
+
+        Route::get('rekapitulasi', [RekapitulasiController::class, 'index'])->name('rekapitulasi.index');
+        Route::get('notifikasi-masa-berlaku', [ExpiryNotificationController::class, 'index'])->name('expiry.index');
+        Route::get('monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');
+        Route::post('monitoring/{document}/catatan', [MonitoringController::class, 'storeNote'])->name('monitoring.notes.store');
+        Route::post('monitoring/survei', [MonitoringController::class, 'storeSurvey'])->name('monitoring.surveys.store');
+        Route::get('evaluasi-kepuasan/indikator', [SatisfactionQuestionController::class, 'index'])->name('satisfaction.questions.index');
+        Route::post('evaluasi-kepuasan/indikator', [SatisfactionQuestionController::class, 'store'])->name('satisfaction.questions.store');
+        Route::put('evaluasi-kepuasan/indikator/{question}', [SatisfactionQuestionController::class, 'update'])->name('satisfaction.questions.update');
 
         Route::get('years', [YearFolderController::class, 'index'])->name('years.index');
         Route::get('years/create', [YearFolderController::class, 'create'])->name('years.create');

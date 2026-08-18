@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\CooperationExpiryStatus;
+use App\Services\CooperationExpiryService;
+use App\Support\CooperationTaxonomy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +21,11 @@ class Document extends Model
         'document_folder_id',
         'title',
         'description',
+        'document_date',
+        'cooperation_area',
+        'cooperation_subtype',
+        'cooperation_start_date',
+        'cooperation_end_date',
         'original_filename',
         'stored_filename',
         'private_file_path',
@@ -41,6 +49,9 @@ class Document extends Model
         return [
             'file_size' => 'integer',
             'is_active' => 'boolean',
+            'document_date' => 'date',
+            'cooperation_start_date' => 'date',
+            'cooperation_end_date' => 'date',
         ];
     }
 
@@ -67,6 +78,46 @@ class Document extends Model
     public function accessRequests(): HasMany
     {
         return $this->hasMany(DocumentAccessRequest::class);
+    }
+
+    public function monitorings(): HasMany
+    {
+        return $this->hasMany(CooperationMonitoring::class);
+    }
+
+    public function satisfactionSurveys(): HasMany
+    {
+        return $this->hasMany(SatisfactionSurvey::class);
+    }
+
+    public function areaLabel(): ?string
+    {
+        return CooperationTaxonomy::areaLabel($this->cooperation_area);
+    }
+
+    public function subtypeLabel(): ?string
+    {
+        return CooperationTaxonomy::subtypeLabel($this->cooperation_area, $this->cooperation_subtype);
+    }
+
+    public function isClassified(): bool
+    {
+        return filled($this->cooperation_area);
+    }
+
+    public function expiryStatus(): ?CooperationExpiryStatus
+    {
+        return (new CooperationExpiryService)->status($this->cooperation_end_date);
+    }
+
+    public function locationLabel(): string
+    {
+        return collect([
+            $this->yearFolder?->category?->section?->name,
+            $this->yearFolder?->category?->name,
+            $this->yearFolder?->year,
+            $this->documentFolder?->name,
+        ])->filter()->implode(' / ');
     }
 
     public function scopeActive(Builder $query): Builder

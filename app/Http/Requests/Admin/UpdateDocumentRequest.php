@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\Admin;
 
+use App\Support\CooperationTaxonomy;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Validator;
 
 class UpdateDocumentRequest extends FormRequest
 {
@@ -16,6 +18,17 @@ class UpdateDocumentRequest extends FormRequest
             : false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'cooperation_area' => $this->blankToNull($this->input('cooperation_area')),
+            'cooperation_subtype' => $this->blankToNull($this->input('cooperation_subtype')),
+            'document_date' => $this->blankToNull($this->input('document_date')),
+            'cooperation_start_date' => $this->blankToNull($this->input('cooperation_start_date')),
+            'cooperation_end_date' => $this->blankToNull($this->input('cooperation_end_date')),
+        ]);
+    }
+
     public function rules(): array
     {
         $extensions = config('documents.allowed_extensions', []);
@@ -23,6 +36,7 @@ class UpdateDocumentRequest extends FormRequest
         $previewMaxKb = (int) config('documents.preview_max_mb', 5) * 1024;
         $document = $this->route('document');
         $yearFolderId = $document?->year_folder_id;
+        $areas = array_keys(CooperationTaxonomy::areas());
 
         return [
             'title' => ['sometimes', 'string', 'max:255'],
@@ -35,6 +49,11 @@ class UpdateDocumentRequest extends FormRequest
                         ->whereNull('deleted_at');
                 }),
             ],
+            'document_date' => ['nullable', 'date'],
+            'cooperation_area' => ['nullable', 'string', Rule::in($areas)],
+            'cooperation_subtype' => ['nullable', 'string', 'max:128'],
+            'cooperation_start_date' => ['nullable', 'date'],
+            'cooperation_end_date' => ['nullable', 'date', 'after_or_equal:cooperation_start_date'],
             'is_active' => ['sometimes', 'boolean'],
             'document' => [
                 'nullable',
@@ -51,10 +70,33 @@ class UpdateDocumentRequest extends FormRequest
         ];
     }
 
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            $area = $this->input('cooperation_area');
+            $subtype = $this->input('cooperation_subtype');
+            if (filled($subtype) && ! CooperationTaxonomy::isValidSubtype($area, $subtype)) {
+                $validator->errors()->add('cooperation_subtype', 'Sub dokumen tidak sesuai dengan bidang yang dipilih.');
+            }
+        });
+    }
+
     public function messages(): array
     {
         return [
             'document_folder_id.exists' => 'Folder tidak valid untuk folder tahun dokumen ini.',
+            'cooperation_end_date.after_or_equal' => 'Tanggal berakhir kerjasama tidak boleh lebih awal dari tanggal mulai.',
         ];
+    }
+
+    private function blankToNull(mixed $value): mixed
+    {
+        if (! is_string($value)) {
+            return $value;
+        }
+
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 }

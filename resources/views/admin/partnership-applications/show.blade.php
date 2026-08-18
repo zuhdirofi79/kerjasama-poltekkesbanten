@@ -13,6 +13,7 @@
     <div class="space-y-6 xl:col-span-2">
         <div class="card-surface space-y-3 p-5">
             <h2 class="font-semibold text-teal-950">1. Identitas Calon Mitra</h2>
+            <p><span class="text-slate-500">Jenis pengajuan:</span> {{ $application->applicant_type?->label() ?: '—' }}</p>
             <p><span class="text-slate-500">Email instansi:</span> {{ $application->institution_email }}</p>
             <p><span class="text-slate-500">Nama instansi:</span> {{ $application->institution_name }}</p>
             <p><span class="text-slate-500">Alamat:</span> {{ $application->institution_address }}</p>

@@ -30,6 +30,7 @@ class PartnershipApplicationController extends Controller
             ],
             'maxUploadMb' => (int) config('partnership_applications.max_upload_mb', 10),
             'today' => now()->toDateString(),
+            'internalInstitution' => config('partnership_applications.internal_institution'),
             'prefill' => [
                 'email' => auth()->user()?->email,
                 'name' => auth()->user()?->name,

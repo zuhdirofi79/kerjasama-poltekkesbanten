@@ -14,6 +14,7 @@ return [
 
     'allowed_extensions' => [
         'official_request_letter' => ['pdf', 'doc', 'docx'],
+        'filled_template' => ['pdf', 'doc', 'docx'],
         'institution_profile' => ['pdf', 'doc', 'docx', 'ppt', 'pptx'],
         'supporting_document' => ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'],
     ],
@@ -33,6 +34,18 @@ return [
         'sh', 'bash', 'exe', 'bat', 'cmd', 'com', 'msi',
         'js', 'mjs', 'cjs', 'vbs', 'ps1', 'cgi', 'pl', 'py', 'rb',
         'htaccess', 'html', 'htm', 'shtml',
+    ],
+
+    'applicant_types' => [
+        'internal' => 'Internal',
+        'external' => 'Eksternal',
+    ],
+
+    'internal_institution' => [
+        'name' => 'Poltekkes Kemenkes Banten',
+        'address' => 'Jl. Syekh Moh. Nawawi Albantani No.12, Banjaragung, Kec. Cipocok Jaya, Kota Serang, Banten 42122',
+        'phone' => '+62 851-8777-8838',
+        'website' => 'https://poltekkesbanten.ac.id/',
     ],
 
     'institution_types' => [

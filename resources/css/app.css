@@ -454,6 +454,48 @@
         color: var(--brand-muted);
     }
 
+    .document-card__classification {
+        @apply mt-2 flex flex-wrap gap-1.5 text-[11px] leading-snug;
+        color: var(--brand-teal);
+    }
+
+    .document-card__classification span {
+        @apply rounded-full border px-2 py-0.5;
+        border-color: var(--brand-border);
+        background: var(--brand-cyan-soft);
+    }
+
+    .document-filter-bar {
+        @apply mt-4 grid gap-2 rounded-xl border bg-white p-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7;
+        border-color: var(--brand-border);
+    }
+
+    .document-filter-bar__search,
+    .document-filter-bar__select,
+    .document-filter-bar__date {
+        @apply w-full rounded-lg text-sm;
+        border-color: var(--brand-border);
+        color: var(--brand-text);
+    }
+
+    .contact-whatsapp-label {
+        display: none;
+        margin-left: 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    @media (min-width: 640px) {
+        .contact-person-whatsapp {
+            width: auto;
+            padding: 0 0.75rem;
+        }
+
+        .contact-whatsapp-label {
+            display: inline;
+        }
+    }
+
     .institution-card {
         @apply block rounded-2xl bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md;
         border: 1px solid var(--brand-border);

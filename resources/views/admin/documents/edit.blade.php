@@ -51,6 +51,7 @@
         <input type="hidden" name="is_active" value="0">
         <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $document->is_active))> Aktif
     </label>
+    @include('admin.documents.partials.metadata-fields', ['document' => $document, 'areas' => $areas, 'subtypes' => $subtypes])
     <button class="btn-teal">Perbarui</button>
 </form>
 @endsection

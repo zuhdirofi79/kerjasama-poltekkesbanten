@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PartnershipApplicationService
 {
@@ -38,6 +39,7 @@ class PartnershipApplicationService
                     'public_token' => $token,
                     'submission_code' => $code,
                     'status' => PartnershipApplicationStatus::Submitted,
+                    'applicant_type' => $data['applicant_type'] ?? null,
                     'institution_email' => $data['institution_email'],
                     'institution_name' => $data['institution_name'],
                     'institution_address' => $data['institution_address'],
@@ -86,7 +88,7 @@ class PartnershipApplicationService
                     'applicant_user_agent' => $userAgent ? Str::limit($userAgent, 500, '') : null,
                 ]);
 
-                foreach (['official_request_letter', 'institution_profile', 'supporting_document'] as $type) {
+                foreach (['official_request_letter', 'institution_profile', 'supporting_document', 'filled_template'] as $type) {
                     /** @var UploadedFile|null $file */
                     $file = $files[$type] ?? null;
                     if (! $file instanceof UploadedFile) {
@@ -166,7 +168,7 @@ class PartnershipApplicationService
         PartnershipApplication $application,
         PartnershipApplicationAttachment $attachment,
         User $user,
-    ): \Symfony\Component\HttpFoundation\StreamedResponse {
+    ): StreamedResponse {
         if ($attachment->partnership_application_id !== $application->id) {
             abort(404);
         }

@@ -92,6 +92,11 @@ class DocumentStorageService
                     'checksum' => hash_file('sha256', $file->getRealPath()),
                     'is_active' => (bool) ($meta['is_active'] ?? true),
                     'uploaded_by' => $uploadedBy,
+                    'document_date' => $meta['document_date'] ?? null,
+                    'cooperation_area' => $meta['cooperation_area'] ?? null,
+                    'cooperation_subtype' => $meta['cooperation_subtype'] ?? null,
+                    'cooperation_start_date' => $meta['cooperation_start_date'] ?? null,
+                    'cooperation_end_date' => $meta['cooperation_end_date'] ?? null,
                 ]);
 
                 $this->auditLogService->log('document.uploaded', $document, null, [

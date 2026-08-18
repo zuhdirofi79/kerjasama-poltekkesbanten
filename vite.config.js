@@ -10,6 +10,7 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/css/partnership.css',
                 'resources/js/app.js',
+                'resources/js/charts.js',
             ],
             refresh: true,
         }),

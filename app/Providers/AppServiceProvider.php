@@ -2,23 +2,34 @@
 
 namespace App\Providers;
 
+use App\Services\CooperationExpiryService;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
-        //
+        View::composer('layouts.admin', function ($view): void {
+            $user = auth()->user();
+            $count = 0;
+            $items = collect();
+
+            if ($user?->canAccessAdminPanel()) {
+                $payload = app(CooperationExpiryService::class)->bellPayload();
+                $count = $payload['count'];
+                $items = $payload['items'];
+            }
+
+            $view->with([
+                'expiryNotificationCount' => $count,
+                'expiryNotifications' => $items,
+            ]);
+        });
     }
 }

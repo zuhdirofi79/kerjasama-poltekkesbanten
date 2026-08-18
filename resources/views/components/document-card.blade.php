@@ -33,6 +33,27 @@
         <div>
             <h3 class="document-card__title">{{ $document->title }}</h3>
             <p class="document-card__meta">{{ strtoupper($document->extension) }} · {{ $document->formattedSize() }}</p>
+            @if($document->isClassified() || $document->document_date || $document->cooperation_end_date)
+                <p class="document-card__classification">
+                    @if($document->areaLabel())
+                        <span>{{ $document->areaLabel() }}</span>
+                    @endif
+                    @if($document->subtypeLabel())
+                        <span>{{ $document->subtypeLabel() }}</span>
+                    @endif
+                    @if($document->document_date)
+                        <span>{{ $document->document_date->format('d/m/Y') }}</span>
+                    @endif
+                    @if($document->expiryStatus())
+                        <span>
+                            {{ $document->expiryStatus()->label() }}
+                            @if($document->cooperation_end_date)
+                                sampai {{ $document->cooperation_end_date->format('d/m/Y') }}
+                            @endif
+                        </span>
+                    @endif
+                </p>
+            @endif
         </div>
 
         @if($canOpen)

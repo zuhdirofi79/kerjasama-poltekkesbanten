@@ -30,7 +30,7 @@
             <a href="{{ route('pages.profil') }}" class="nav-link {{ $active === 'profil' ? 'nav-link-active' : '' }}">Profil</a>
             <a href="{{ route('pages.mitra') }}" class="nav-link {{ $active === 'mitra' ? 'nav-link-active' : '' }}">Mitra</a>
             <a href="{{ route('pages.skema') }}" class="nav-link {{ $active === 'skema' ? 'nav-link-active' : '' }}">Skema Kerjasama</a>
-            <a href="{{ route('pages.kontak') }}" class="nav-link {{ $active === 'kontak' ? 'nav-link-active' : '' }}">Kontak</a>
+            <a href="{{ route('pages.kontak') }}" class="nav-link {{ $active === 'kontak' ? 'nav-link-active' : '' }}">Kontak / Helpdesk</a>
             <a href="{{ route('partnership-applications.create') }}" class="btn-cta ml-3 !py-2 !text-xs">
                 <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
                 Ajukan Kerjasama
@@ -41,6 +41,7 @@
             @auth
                 @if(auth()->user()->canAccessAdminPanel())
                     <a href="{{ route('admin.dashboard') }}" class="hidden sm:inline text-sm font-semibold" style="color: var(--brand-teal);">Admin</a>
+                    <a href="{{ route('admin.rekapitulasi.index') }}" class="hidden xl:inline text-sm font-semibold" style="color: var(--brand-teal);">Rekapitulasi</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
@@ -63,7 +64,7 @@
             <a href="{{ route('pages.profil') }}" class="nav-link {{ $active === 'profil' ? 'nav-link-active' : '' }}">Profil</a>
             <a href="{{ route('pages.mitra') }}" class="nav-link {{ $active === 'mitra' ? 'nav-link-active' : '' }}">Mitra</a>
             <a href="{{ route('pages.skema') }}" class="nav-link {{ $active === 'skema' ? 'nav-link-active' : '' }}">Skema Kerjasama</a>
-            <a href="{{ route('pages.kontak') }}" class="nav-link {{ $active === 'kontak' ? 'nav-link-active' : '' }}">Kontak</a>
+            <a href="{{ route('pages.kontak') }}" class="nav-link {{ $active === 'kontak' ? 'nav-link-active' : '' }}">Kontak / Helpdesk</a>
             <a href="{{ route('partnership-applications.create') }}" class="btn-cta mt-2 !text-xs">
                 <img src="{{ asset('images/icons/icon-edit.svg') }}" alt="" aria-hidden="true">
                 Ajukan Kerjasama
